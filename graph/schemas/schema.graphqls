@@ -1,0 +1,22 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+# GraphQL schema-enum
+enum LanguageEnum {
+  TAI
+  ENG
+}
+
+# GrapgQL schema-type
+type PaginationType {
+  page: Int!
+  pageSize: Int!
+  total: Int!
+}
+
+# GrapgQL schema-input
+input PaginationInput {
+  page: Int!
+  pageSize: Int!
+  orderBy: String
+}
