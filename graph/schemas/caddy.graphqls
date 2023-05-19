@@ -1,0 +1,60 @@
+# GraphQL Basic enum
+
+# GraphQL schema Type
+# Caddy
+
+type CaddyData {
+  data: [Caddy!]!
+  pagination: PaginationType!
+}
+
+type Caddy {
+  id: String
+  name: String
+  location: String
+  avialability: String
+  skill: [String]
+  start: Int
+  desction: String
+  time: [String]
+  cost: Float
+}
+
+# GraphQl schema Input
+# GetCaddyInput
+input GetCaddyInput {
+  language: LanguageEnum!
+  id: String
+}
+
+# GraphQl schema Input
+# CaddysHistoryInput
+input getCaddysInput {
+  language: LanguageEnum!
+  pagination: PaginationInput!
+}
+
+# GraphQl schema Input
+# CaddyInput
+input CaddyInput {
+  name: String
+  location: String
+  avialability: String
+  skill: [String]
+  start: Int
+  desction: String
+  time: [String]
+  cost: Float
+}
+
+# Query
+extend type Query {
+  getCaddy(input: GetCaddyInput!): Caddy!
+  getCaddys(input: GetCaddyInput!): CaddyData!
+}
+
+# Mutation
+
+extend type Mutation {
+  Caddy(input: CaddyInput!): Caddy!
+}
