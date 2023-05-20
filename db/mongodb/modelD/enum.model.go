@@ -1,4 +1,4 @@
-package modeldb
+package modelD
 
 type LanguageType string
 

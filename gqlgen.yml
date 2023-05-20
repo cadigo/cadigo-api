@@ -14,7 +14,7 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: graph/model/models_gen.go
+  filename: graph/modelgraph/models_gen.go
   package: modelgraph
 
 # Where should the resolver implementations go?
@@ -62,9 +62,9 @@ resolver:
 
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
-autobind:
-#  - "cadigo-api/graph/model"
-
+# autobind:
+#   - "cadigo-api/graph/modelgraph"
+omit_getters: true
 # This section declares type mapping between the GraphQL and go type systems
 #
 # The first line in each type will be used as defaults for resolver arguments and

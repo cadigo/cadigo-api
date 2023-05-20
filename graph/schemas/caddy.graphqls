@@ -15,7 +15,7 @@ type Caddy {
   avialability: String
   skill: [String]
   start: Int
-  desction: String
+  description: String
   time: [String]
   cost: Float
 }
@@ -37,14 +37,14 @@ input getCaddysInput {
 # GraphQl schema Input
 # CaddyInput
 input CaddyInput {
-  name: String
-  location: String
-  avialability: String
-  skill: [String]
-  start: Int
-  desction: String
-  time: [String]
-  cost: Float
+  name: String!
+  location: String!
+  avialability: String!
+  skill: [String!]
+  start: Int!
+  description: String!
+  time: [String!]
+  cost: Float!
 }
 
 # Query

@@ -8,8 +8,7 @@ import (
 )
 
 type MongodbRepositoryCfg struct {
-	CustomIDPrefix  string `mapstructure:"custom_id_prefix" json:"custom_id_prefix"`
-	EnabledNRTracer bool   `mapstructure:"enabled_newrelic_tracer" json:"enabled_newrelic_tracer"`
+	CustomIDPrefix string `env:"CUSTOM_ID_PREFIX,required" json:"custom_id_prefix"`
 }
 
 type BaseMongoRepo struct {

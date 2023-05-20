@@ -4,7 +4,7 @@ package graph
 
 import (
 	"bytes"
-	modelgraph "cadigo-api/graph/model"
+	"cadigo-api/graph/modelgraph"
 	"context"
 	"embed"
 	"errors"
@@ -66,7 +66,7 @@ type ComplexityRoot struct {
 	Caddy struct {
 		Avialability func(childComplexity int) int
 		Cost         func(childComplexity int) int
-		Desction     func(childComplexity int) int
+		Description  func(childComplexity int) int
 		ID           func(childComplexity int) int
 		Location     func(childComplexity int) int
 		Name         func(childComplexity int) int
@@ -223,12 +223,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Caddy.Cost(childComplexity), true
 
-	case "Caddy.desction":
-		if e.complexity.Caddy.Desction == nil {
+	case "Caddy.description":
+		if e.complexity.Caddy.Description == nil {
 			break
 		}
 
-		return e.complexity.Caddy.Desction(childComplexity), true
+		return e.complexity.Caddy.Description(childComplexity), true
 
 	case "Caddy.id":
 		if e.complexity.Caddy.ID == nil {
@@ -481,7 +481,7 @@ func (ec *executionContext) field_Mutation_Caddy_args(ctx context.Context, rawAr
 	var arg0 modelgraph.CaddyInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCaddyInput2cadigoᚑapiᚋgraphᚋmodelᚐCaddyInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCaddyInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐCaddyInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -496,7 +496,7 @@ func (ec *executionContext) field_Mutation_booking_args(ctx context.Context, raw
 	var arg0 modelgraph.BookingInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNBookingInput2cadigoᚑapiᚋgraphᚋmodelᚐBookingInput(ctx, tmp)
+		arg0, err = ec.unmarshalNBookingInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐBookingInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -526,7 +526,7 @@ func (ec *executionContext) field_Query_getBooking_args(ctx context.Context, raw
 	var arg0 modelgraph.GetBookingInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNGetBookingInput2cadigoᚑapiᚋgraphᚋmodelᚐGetBookingInput(ctx, tmp)
+		arg0, err = ec.unmarshalNGetBookingInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetBookingInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -541,7 +541,7 @@ func (ec *executionContext) field_Query_getBookingsHistory_args(ctx context.Cont
 	var arg0 modelgraph.BookingsHistoryInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNBookingsHistoryInput2cadigoᚑapiᚋgraphᚋmodelᚐBookingsHistoryInput(ctx, tmp)
+		arg0, err = ec.unmarshalNBookingsHistoryInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐBookingsHistoryInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -556,7 +556,7 @@ func (ec *executionContext) field_Query_getCaddy_args(ctx context.Context, rawAr
 	var arg0 modelgraph.GetCaddyInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNGetCaddyInput2cadigoᚑapiᚋgraphᚋmodelᚐGetCaddyInput(ctx, tmp)
+		arg0, err = ec.unmarshalNGetCaddyInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCaddyInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -571,7 +571,7 @@ func (ec *executionContext) field_Query_getCaddys_args(ctx context.Context, rawA
 	var arg0 modelgraph.GetCaddyInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNGetCaddyInput2cadigoᚑapiᚋgraphᚋmodelᚐGetCaddyInput(ctx, tmp)
+		arg0, err = ec.unmarshalNGetCaddyInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCaddyInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1056,7 +1056,7 @@ func (ec *executionContext) _BookingData_data(ctx context.Context, field graphql
 	}
 	res := resTmp.([]*modelgraph.Booking)
 	fc.Result = res
-	return ec.marshalNBooking2ᚕᚖcadigoᚑapiᚋgraphᚋmodelᚐBookingᚄ(ctx, field.Selections, res)
+	return ec.marshalNBooking2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐBookingᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_BookingData_data(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1122,7 +1122,7 @@ func (ec *executionContext) _BookingData_pagination(ctx context.Context, field g
 	}
 	res := resTmp.(*modelgraph.PaginationType)
 	fc.Result = res
-	return ec.marshalNPaginationType2ᚖcadigoᚑapiᚋgraphᚋmodelᚐPaginationType(ctx, field.Selections, res)
+	return ec.marshalNPaginationType2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPaginationType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_BookingData_pagination(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1392,8 +1392,8 @@ func (ec *executionContext) fieldContext_Caddy_start(ctx context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Caddy_desction(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Caddy) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Caddy_desction(ctx, field)
+func (ec *executionContext) _Caddy_description(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Caddy) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Caddy_description(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1406,7 +1406,7 @@ func (ec *executionContext) _Caddy_desction(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Desction, nil
+		return obj.Description, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1420,7 +1420,7 @@ func (ec *executionContext) _Caddy_desction(ctx context.Context, field graphql.C
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Caddy_desction(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Caddy_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Caddy",
 		Field:      field,
@@ -1543,7 +1543,7 @@ func (ec *executionContext) _CaddyData_data(ctx context.Context, field graphql.C
 	}
 	res := resTmp.([]*modelgraph.Caddy)
 	fc.Result = res
-	return ec.marshalNCaddy2ᚕᚖcadigoᚑapiᚋgraphᚋmodelᚐCaddyᚄ(ctx, field.Selections, res)
+	return ec.marshalNCaddy2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCaddyᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CaddyData_data(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1566,8 +1566,8 @@ func (ec *executionContext) fieldContext_CaddyData_data(ctx context.Context, fie
 				return ec.fieldContext_Caddy_skill(ctx, field)
 			case "start":
 				return ec.fieldContext_Caddy_start(ctx, field)
-			case "desction":
-				return ec.fieldContext_Caddy_desction(ctx, field)
+			case "description":
+				return ec.fieldContext_Caddy_description(ctx, field)
 			case "time":
 				return ec.fieldContext_Caddy_time(ctx, field)
 			case "cost":
@@ -1607,7 +1607,7 @@ func (ec *executionContext) _CaddyData_pagination(ctx context.Context, field gra
 	}
 	res := resTmp.(*modelgraph.PaginationType)
 	fc.Result = res
-	return ec.marshalNPaginationType2ᚖcadigoᚑapiᚋgraphᚋmodelᚐPaginationType(ctx, field.Selections, res)
+	return ec.marshalNPaginationType2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPaginationType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_CaddyData_pagination(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1659,7 +1659,7 @@ func (ec *executionContext) _Mutation_booking(ctx context.Context, field graphql
 	}
 	res := resTmp.(*modelgraph.Booking)
 	fc.Result = res
-	return ec.marshalNBooking2ᚖcadigoᚑapiᚋgraphᚋmodelᚐBooking(ctx, field.Selections, res)
+	return ec.marshalNBooking2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐBooking(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_booking(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1736,7 +1736,7 @@ func (ec *executionContext) _Mutation_Caddy(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*modelgraph.Caddy)
 	fc.Result = res
-	return ec.marshalNCaddy2ᚖcadigoᚑapiᚋgraphᚋmodelᚐCaddy(ctx, field.Selections, res)
+	return ec.marshalNCaddy2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCaddy(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_Caddy(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1759,8 +1759,8 @@ func (ec *executionContext) fieldContext_Mutation_Caddy(ctx context.Context, fie
 				return ec.fieldContext_Caddy_skill(ctx, field)
 			case "start":
 				return ec.fieldContext_Caddy_start(ctx, field)
-			case "desction":
-				return ec.fieldContext_Caddy_desction(ctx, field)
+			case "description":
+				return ec.fieldContext_Caddy_description(ctx, field)
 			case "time":
 				return ec.fieldContext_Caddy_time(ctx, field)
 			case "cost":
@@ -1943,7 +1943,7 @@ func (ec *executionContext) _Query_getBooking(ctx context.Context, field graphql
 	}
 	res := resTmp.(*modelgraph.Booking)
 	fc.Result = res
-	return ec.marshalNBooking2ᚖcadigoᚑapiᚋgraphᚋmodelᚐBooking(ctx, field.Selections, res)
+	return ec.marshalNBooking2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐBooking(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getBooking(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2020,7 +2020,7 @@ func (ec *executionContext) _Query_getBookingsHistory(ctx context.Context, field
 	}
 	res := resTmp.(*modelgraph.BookingData)
 	fc.Result = res
-	return ec.marshalNBookingData2ᚖcadigoᚑapiᚋgraphᚋmodelᚐBookingData(ctx, field.Selections, res)
+	return ec.marshalNBookingData2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐBookingData(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getBookingsHistory(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2081,7 +2081,7 @@ func (ec *executionContext) _Query_getCaddy(ctx context.Context, field graphql.C
 	}
 	res := resTmp.(*modelgraph.Caddy)
 	fc.Result = res
-	return ec.marshalNCaddy2ᚖcadigoᚑapiᚋgraphᚋmodelᚐCaddy(ctx, field.Selections, res)
+	return ec.marshalNCaddy2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCaddy(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getCaddy(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2104,8 +2104,8 @@ func (ec *executionContext) fieldContext_Query_getCaddy(ctx context.Context, fie
 				return ec.fieldContext_Caddy_skill(ctx, field)
 			case "start":
 				return ec.fieldContext_Caddy_start(ctx, field)
-			case "desction":
-				return ec.fieldContext_Caddy_desction(ctx, field)
+			case "description":
+				return ec.fieldContext_Caddy_description(ctx, field)
 			case "time":
 				return ec.fieldContext_Caddy_time(ctx, field)
 			case "cost":
@@ -2156,7 +2156,7 @@ func (ec *executionContext) _Query_getCaddys(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*modelgraph.CaddyData)
 	fc.Result = res
-	return ec.marshalNCaddyData2ᚖcadigoᚑapiᚋgraphᚋmodelᚐCaddyData(ctx, field.Selections, res)
+	return ec.marshalNCaddyData2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCaddyData(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getCaddys(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4118,7 +4118,7 @@ func (ec *executionContext) unmarshalInputBookingInput(ctx context.Context, obj 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("language"))
-			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelᚐLanguageEnum(ctx, v)
+			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4147,7 +4147,7 @@ func (ec *executionContext) unmarshalInputBookingsHistoryInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("language"))
-			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelᚐLanguageEnum(ctx, v)
+			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4156,7 +4156,7 @@ func (ec *executionContext) unmarshalInputBookingsHistoryInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
-			data, err := ec.unmarshalNPaginationInput2ᚖcadigoᚑapiᚋgraphᚋmodelᚐPaginationInput(ctx, v)
+			data, err := ec.unmarshalNPaginationInput2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPaginationInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4174,7 +4174,7 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "location", "avialability", "skill", "start", "desction", "time", "cost"}
+	fieldsInOrder := [...]string{"name", "location", "avialability", "skill", "start", "description", "time", "cost"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4185,7 +4185,7 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4194,7 +4194,7 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4203,7 +4203,7 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("avialability"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4212,7 +4212,7 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("skill"))
-			data, err := ec.unmarshalOString2ᚕᚖstring(ctx, v)
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4221,25 +4221,25 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("start"))
-			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Start = data
-		case "desction":
+		case "description":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("desction"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Desction = data
+			it.Description = data
 		case "time":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time"))
-			data, err := ec.unmarshalOString2ᚕᚖstring(ctx, v)
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4248,7 +4248,7 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cost"))
-			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4286,7 +4286,7 @@ func (ec *executionContext) unmarshalInputGetBookingInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("language"))
-			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelᚐLanguageEnum(ctx, v)
+			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4315,7 +4315,7 @@ func (ec *executionContext) unmarshalInputGetCaddyInput(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("language"))
-			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelᚐLanguageEnum(ctx, v)
+			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4400,7 +4400,7 @@ func (ec *executionContext) unmarshalInputgetCaddysInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("language"))
-			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelᚐLanguageEnum(ctx, v)
+			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4409,7 +4409,7 @@ func (ec *executionContext) unmarshalInputgetCaddysInput(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
-			data, err := ec.unmarshalNPaginationInput2ᚖcadigoᚑapiᚋgraphᚋmodelᚐPaginationInput(ctx, v)
+			data, err := ec.unmarshalNPaginationInput2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPaginationInput(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4558,9 +4558,9 @@ func (ec *executionContext) _Caddy(ctx context.Context, sel ast.SelectionSet, ob
 
 			out.Values[i] = ec._Caddy_start(ctx, field, obj)
 
-		case "desction":
+		case "description":
 
-			out.Values[i] = ec._Caddy_desction(ctx, field, obj)
+			out.Values[i] = ec._Caddy_description(ctx, field, obj)
 
 		case "time":
 
@@ -5158,11 +5158,11 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNBooking2cadigoᚑapiᚋgraphᚋmodelᚐBooking(ctx context.Context, sel ast.SelectionSet, v modelgraph.Booking) graphql.Marshaler {
+func (ec *executionContext) marshalNBooking2cadigoᚑapiᚋgraphᚋmodelgraphᚐBooking(ctx context.Context, sel ast.SelectionSet, v modelgraph.Booking) graphql.Marshaler {
 	return ec._Booking(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNBooking2ᚕᚖcadigoᚑapiᚋgraphᚋmodelᚐBookingᚄ(ctx context.Context, sel ast.SelectionSet, v []*modelgraph.Booking) graphql.Marshaler {
+func (ec *executionContext) marshalNBooking2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐBookingᚄ(ctx context.Context, sel ast.SelectionSet, v []*modelgraph.Booking) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5186,7 +5186,7 @@ func (ec *executionContext) marshalNBooking2ᚕᚖcadigoᚑapiᚋgraphᚋmodel�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNBooking2ᚖcadigoᚑapiᚋgraphᚋmodelᚐBooking(ctx, sel, v[i])
+			ret[i] = ec.marshalNBooking2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐBooking(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5206,7 +5206,7 @@ func (ec *executionContext) marshalNBooking2ᚕᚖcadigoᚑapiᚋgraphᚋmodel�
 	return ret
 }
 
-func (ec *executionContext) marshalNBooking2ᚖcadigoᚑapiᚋgraphᚋmodelᚐBooking(ctx context.Context, sel ast.SelectionSet, v *modelgraph.Booking) graphql.Marshaler {
+func (ec *executionContext) marshalNBooking2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐBooking(ctx context.Context, sel ast.SelectionSet, v *modelgraph.Booking) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -5216,11 +5216,11 @@ func (ec *executionContext) marshalNBooking2ᚖcadigoᚑapiᚋgraphᚋmodelᚐBo
 	return ec._Booking(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNBookingData2cadigoᚑapiᚋgraphᚋmodelᚐBookingData(ctx context.Context, sel ast.SelectionSet, v modelgraph.BookingData) graphql.Marshaler {
+func (ec *executionContext) marshalNBookingData2cadigoᚑapiᚋgraphᚋmodelgraphᚐBookingData(ctx context.Context, sel ast.SelectionSet, v modelgraph.BookingData) graphql.Marshaler {
 	return ec._BookingData(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNBookingData2ᚖcadigoᚑapiᚋgraphᚋmodelᚐBookingData(ctx context.Context, sel ast.SelectionSet, v *modelgraph.BookingData) graphql.Marshaler {
+func (ec *executionContext) marshalNBookingData2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐBookingData(ctx context.Context, sel ast.SelectionSet, v *modelgraph.BookingData) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -5230,12 +5230,12 @@ func (ec *executionContext) marshalNBookingData2ᚖcadigoᚑapiᚋgraphᚋmodel�
 	return ec._BookingData(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNBookingInput2cadigoᚑapiᚋgraphᚋmodelᚐBookingInput(ctx context.Context, v interface{}) (modelgraph.BookingInput, error) {
+func (ec *executionContext) unmarshalNBookingInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐBookingInput(ctx context.Context, v interface{}) (modelgraph.BookingInput, error) {
 	res, err := ec.unmarshalInputBookingInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNBookingsHistoryInput2cadigoᚑapiᚋgraphᚋmodelᚐBookingsHistoryInput(ctx context.Context, v interface{}) (modelgraph.BookingsHistoryInput, error) {
+func (ec *executionContext) unmarshalNBookingsHistoryInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐBookingsHistoryInput(ctx context.Context, v interface{}) (modelgraph.BookingsHistoryInput, error) {
 	res, err := ec.unmarshalInputBookingsHistoryInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -5255,11 +5255,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCaddy2cadigoᚑapiᚋgraphᚋmodelᚐCaddy(ctx context.Context, sel ast.SelectionSet, v modelgraph.Caddy) graphql.Marshaler {
+func (ec *executionContext) marshalNCaddy2cadigoᚑapiᚋgraphᚋmodelgraphᚐCaddy(ctx context.Context, sel ast.SelectionSet, v modelgraph.Caddy) graphql.Marshaler {
 	return ec._Caddy(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCaddy2ᚕᚖcadigoᚑapiᚋgraphᚋmodelᚐCaddyᚄ(ctx context.Context, sel ast.SelectionSet, v []*modelgraph.Caddy) graphql.Marshaler {
+func (ec *executionContext) marshalNCaddy2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCaddyᚄ(ctx context.Context, sel ast.SelectionSet, v []*modelgraph.Caddy) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5283,7 +5283,7 @@ func (ec *executionContext) marshalNCaddy2ᚕᚖcadigoᚑapiᚋgraphᚋmodelᚐC
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCaddy2ᚖcadigoᚑapiᚋgraphᚋmodelᚐCaddy(ctx, sel, v[i])
+			ret[i] = ec.marshalNCaddy2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCaddy(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5303,7 +5303,7 @@ func (ec *executionContext) marshalNCaddy2ᚕᚖcadigoᚑapiᚋgraphᚋmodelᚐC
 	return ret
 }
 
-func (ec *executionContext) marshalNCaddy2ᚖcadigoᚑapiᚋgraphᚋmodelᚐCaddy(ctx context.Context, sel ast.SelectionSet, v *modelgraph.Caddy) graphql.Marshaler {
+func (ec *executionContext) marshalNCaddy2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCaddy(ctx context.Context, sel ast.SelectionSet, v *modelgraph.Caddy) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -5313,11 +5313,11 @@ func (ec *executionContext) marshalNCaddy2ᚖcadigoᚑapiᚋgraphᚋmodelᚐCadd
 	return ec._Caddy(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCaddyData2cadigoᚑapiᚋgraphᚋmodelᚐCaddyData(ctx context.Context, sel ast.SelectionSet, v modelgraph.CaddyData) graphql.Marshaler {
+func (ec *executionContext) marshalNCaddyData2cadigoᚑapiᚋgraphᚋmodelgraphᚐCaddyData(ctx context.Context, sel ast.SelectionSet, v modelgraph.CaddyData) graphql.Marshaler {
 	return ec._CaddyData(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCaddyData2ᚖcadigoᚑapiᚋgraphᚋmodelᚐCaddyData(ctx context.Context, sel ast.SelectionSet, v *modelgraph.CaddyData) graphql.Marshaler {
+func (ec *executionContext) marshalNCaddyData2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCaddyData(ctx context.Context, sel ast.SelectionSet, v *modelgraph.CaddyData) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -5327,17 +5327,32 @@ func (ec *executionContext) marshalNCaddyData2ᚖcadigoᚑapiᚋgraphᚋmodelᚐ
 	return ec._CaddyData(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCaddyInput2cadigoᚑapiᚋgraphᚋmodelᚐCaddyInput(ctx context.Context, v interface{}) (modelgraph.CaddyInput, error) {
+func (ec *executionContext) unmarshalNCaddyInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐCaddyInput(ctx context.Context, v interface{}) (modelgraph.CaddyInput, error) {
 	res, err := ec.unmarshalInputCaddyInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNGetBookingInput2cadigoᚑapiᚋgraphᚋmodelᚐGetBookingInput(ctx context.Context, v interface{}) (modelgraph.GetBookingInput, error) {
+func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {
+	res, err := graphql.UnmarshalFloat(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
+	res := graphql.MarshalFloat(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNGetBookingInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetBookingInput(ctx context.Context, v interface{}) (modelgraph.GetBookingInput, error) {
 	res, err := ec.unmarshalInputGetBookingInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNGetCaddyInput2cadigoᚑapiᚋgraphᚋmodelᚐGetCaddyInput(ctx context.Context, v interface{}) (modelgraph.GetCaddyInput, error) {
+func (ec *executionContext) unmarshalNGetCaddyInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCaddyInput(ctx context.Context, v interface{}) (modelgraph.GetCaddyInput, error) {
 	res, err := ec.unmarshalInputGetCaddyInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -5357,22 +5372,22 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelᚐLanguageEnum(ctx context.Context, v interface{}) (modelgraph.LanguageEnum, error) {
+func (ec *executionContext) unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx context.Context, v interface{}) (modelgraph.LanguageEnum, error) {
 	var res modelgraph.LanguageEnum
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelᚐLanguageEnum(ctx context.Context, sel ast.SelectionSet, v modelgraph.LanguageEnum) graphql.Marshaler {
+func (ec *executionContext) marshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx context.Context, sel ast.SelectionSet, v modelgraph.LanguageEnum) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNPaginationInput2ᚖcadigoᚑapiᚋgraphᚋmodelᚐPaginationInput(ctx context.Context, v interface{}) (*modelgraph.PaginationInput, error) {
+func (ec *executionContext) unmarshalNPaginationInput2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPaginationInput(ctx context.Context, v interface{}) (*modelgraph.PaginationInput, error) {
 	res, err := ec.unmarshalInputPaginationInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNPaginationType2ᚖcadigoᚑapiᚋgraphᚋmodelᚐPaginationType(ctx context.Context, sel ast.SelectionSet, v *modelgraph.PaginationType) graphql.Marshaler {
+func (ec *executionContext) marshalNPaginationType2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPaginationType(ctx context.Context, sel ast.SelectionSet, v *modelgraph.PaginationType) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -5706,6 +5721,44 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	}
 	res := graphql.MarshalInt(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚕᚖstring(ctx context.Context, v interface{}) ([]*string, error) {

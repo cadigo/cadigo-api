@@ -1,4 +1,4 @@
-package modeldb
+package modelD
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 

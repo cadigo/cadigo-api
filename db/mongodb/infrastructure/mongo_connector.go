@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -11,21 +12,20 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 type MongodbConfig struct {
-	DatabaseName  string `mapstructure:"db_name" json:"db_name"`
-	DatabaseHosts string `mapstructure:"hosts" json:"hosts"`
-	TimeOut       int    `mapstructure:"timeout" json:"timeout"`
-	DialTimeOut   int64  `mapstructure:"dial_timeout" json:"dial_timeout"`
-	PoolSize      int    `mapstructure:"pool_size" json:"pool_size"`
-	Username      string `mapstructure:"username" json:"username"`
-	Password      string `mapstructure:"password" json:"password"`
-	ReplicaSet    string `mapstructure:"replica_set" json:"replica_set"`
-	AuthSource    string `mapstructure:"auth_source" json:"auth_source"`
-	URI           string `mapstructure:"uri" json:"uri"`
+	DatabaseName  string `env:"MONGODB_DB_NAME,required" json:"db_name"`
+	DatabaseHosts string `env:"MONGODB_HOSTS,required" json:"hosts"`
+	TimeOut       int    `env:"MONGODB_TIMEOUT,required" json:"timeout"`
+	DialTimeOut   int64  `env:"MONGODB_DIAL_TIMEOUT,required" json:"dial_timeout"`
+	PoolSize      int    `env:"MONGODB_POOL_SIZE,required" json:"pool_size"`
+	Username      string `env:"MONGODB_USERNAME,required" json:"username"`
+	Password      string `env:"MONGODB_PASSWORD,required" json:"password"`
+	ReplicaSet    string `env:"MONGODB_REPLICA_SET,required" json:"replica_set"`
+	AuthSource    string `env:"MONGODB_AUTH_SOURCE,required" json:"auth_source"`
+	URI           string `env:"MONGODB_URI,required" json:"uri"`
 }
 
 type MongodbConnector interface {
@@ -41,6 +41,8 @@ type mongodbConnector struct {
 }
 
 func NewMongodbConnector(cfg *MongodbConfig) (MongodbConnector, error) {
+	b, _ := json.Marshal(cfg)
+	fmt.Println(string(b))
 	mongodbConnector := &mongodbConnector{
 		cfg: cfg,
 	}
@@ -61,6 +63,7 @@ func (this *mongodbConnector) connect() error {
 
 	connectOnce.Do(func() {
 		connStr := getConnectionString(this.cfg)
+		fmt.Println(this.cfg)
 		client, err = mongo.NewClient(options.Client().ApplyURI(connStr))
 		if err != nil {
 			log.Fatalf("Failed to connect to database: %s", this.cfg.DatabaseName)
@@ -85,11 +88,11 @@ func (this *mongodbConnector) connect() error {
 }
 
 func (this *mongodbConnector) DB(ctx context.Context) *mongo.Database {
-	var rp readpref.ReadPref
-	err := this.client.Ping(ctx, &rp)
-	if err != nil {
-		log.Fatalf("fail to ping %s", this.cfg.DatabaseHosts)
-	}
+	// var rp readpref.ReadPref
+	// err := this.client.Ping(ctx, &rp)
+	// if err != nil {
+	// 	log.Fatalf("fail to ping %s", this.cfg.DatabaseHosts)
+	// }
 	return this.db
 }
 func (this *mongodbConnector) Client(ctx context.Context) *mongo.Client {

@@ -1,11 +1,9 @@
 package main
 
-import (
-	"cadigo-api/protocol"
-)
+import "cadigo-api/app"
 
 func main() {
-	err := protocol.ServeHTTP()
+	err := app.NewApp()
 	if err != nil {
 		panic(err)
 	}
