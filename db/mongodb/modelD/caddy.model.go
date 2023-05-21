@@ -4,19 +4,19 @@ import "cadigo-api/app/modelA"
 
 type Caddy struct {
 	BaseBSONModel
-	Language     LanguageType `bson:"language" copier:"Language"`
-	Name         string       `bson:"name" copier:"Name"`
-	Location     string       `bson:"location,omitempty" copier:"Location"`
-	Avialability string       `bson:"avialability,omitempty" copier:"Avialability"`
-	Skill        []string     `bson:"skill,omitempty" copier:"Skill"`
-	Start        int          `bson:"start,omitempty" copier:"Start"`
-	Description  string       `bson:"description,omitempty" copier:"Description"`
-	Time         []string     `bson:"time,omitempty" copier:"Time"`
-	Tags         []string     `bson:"tags,omitempty" copier:"Tags"`
-	Cost         float64      `bson:"cost" copier:"Cost"`
+	Language     string   `bson:"language" copier:"Language"`
+	Name         string   `bson:"name" copier:"Name"`
+	Location     string   `bson:"location,omitempty" copier:"Location"`
+	Avialability string   `bson:"avialability,omitempty" copier:"Avialability"`
+	Skill        []string `bson:"skill,omitempty" copier:"Skill"`
+	Start        int      `bson:"start,omitempty" copier:"Start"`
+	Description  string   `bson:"description,omitempty" copier:"Description"`
+	Time         []string `bson:"time,omitempty" copier:"Time"`
+	Tags         []string `bson:"tags,omitempty" copier:"Tags"`
+	Cost         float64  `bson:"cost" copier:"Cost"`
 }
 
-func (this *Caddy) CaddyDB() modelA.Caddy {
+func (this *Caddy) ToCaddy() modelA.Caddy {
 	var skill []string
 	var time []string
 

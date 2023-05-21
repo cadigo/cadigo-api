@@ -19,3 +19,7 @@ func NewService(repo caddyInterface.CaddyRepository) caddyInterface.CaddyService
 func (serv *Service) Create(ctx context.Context, caddy *modelA.Caddy) (*modelA.Caddy, error) {
 	return serv.repo.Create(ctx, caddy)
 }
+
+func (serv *Service) GetAll(ctx context.Context, pagination modelA.Pagination) (result []*modelA.Caddy, total int64, err error) {
+	return serv.repo.GetAll(ctx, pagination)
+}

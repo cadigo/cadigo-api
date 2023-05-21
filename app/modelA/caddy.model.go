@@ -23,7 +23,7 @@ func (this Caddy) Parse(graph modelgraph.CaddyInput) error {
 }
 
 func (this Caddy) ToGraph() modelgraph.Caddy {
-	return modelgraph.Caddy{
-		Cost: &this.Cost,
-	}
+	g := modelgraph.Caddy{}
+	copier.Copy(&g, &this)
+	return g
 }

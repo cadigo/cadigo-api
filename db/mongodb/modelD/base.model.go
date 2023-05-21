@@ -7,8 +7,3 @@ type BaseBSONModel struct {
 	CreatedAt int64              `json:"created_at,omitempty" bson:"created_at"`
 	UpdatedAt int64              `json:"updated_at,omitempty" bson:"updated_at"`
 }
-
-type Language struct {
-	Content LanguageType `bson:"content,omitempty"`
-	Value   string       `bson:"value,omitempty"`
-}

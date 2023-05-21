@@ -86,16 +86,16 @@ type ComplexityRoot struct {
 	}
 
 	PaginationType struct {
-		Page     func(childComplexity int) int
-		PageSize func(childComplexity int) int
-		Total    func(childComplexity int) int
+		Limit func(childComplexity int) int
+		Page  func(childComplexity int) int
+		Total func(childComplexity int) int
 	}
 
 	Query struct {
 		GetBooking         func(childComplexity int, input modelgraph.GetBookingInput) int
 		GetBookingsHistory func(childComplexity int, input modelgraph.BookingsHistoryInput) int
 		GetCaddy           func(childComplexity int, input modelgraph.GetCaddyInput) int
-		GetCaddys          func(childComplexity int, input modelgraph.GetCaddyInput) int
+		GetCaddys          func(childComplexity int, input modelgraph.GetCaddysInput) int
 	}
 }
 
@@ -107,7 +107,7 @@ type QueryResolver interface {
 	GetBooking(ctx context.Context, input modelgraph.GetBookingInput) (*modelgraph.Booking, error)
 	GetBookingsHistory(ctx context.Context, input modelgraph.BookingsHistoryInput) (*modelgraph.BookingData, error)
 	GetCaddy(ctx context.Context, input modelgraph.GetCaddyInput) (*modelgraph.Caddy, error)
-	GetCaddys(ctx context.Context, input modelgraph.GetCaddyInput) (*modelgraph.CaddyData, error)
+	GetCaddys(ctx context.Context, input modelgraph.GetCaddysInput) (*modelgraph.CaddyData, error)
 }
 
 type executableSchema struct {
@@ -310,19 +310,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Caddy(childComplexity, args["input"].(modelgraph.CaddyInput)), true
 
+	case "PaginationType.limit":
+		if e.complexity.PaginationType.Limit == nil {
+			break
+		}
+
+		return e.complexity.PaginationType.Limit(childComplexity), true
+
 	case "PaginationType.page":
 		if e.complexity.PaginationType.Page == nil {
 			break
 		}
 
 		return e.complexity.PaginationType.Page(childComplexity), true
-
-	case "PaginationType.pageSize":
-		if e.complexity.PaginationType.PageSize == nil {
-			break
-		}
-
-		return e.complexity.PaginationType.PageSize(childComplexity), true
 
 	case "PaginationType.total":
 		if e.complexity.PaginationType.Total == nil {
@@ -377,7 +377,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetCaddys(childComplexity, args["input"].(modelgraph.GetCaddyInput)), true
+		return e.complexity.Query.GetCaddys(childComplexity, args["input"].(modelgraph.GetCaddysInput)), true
 
 	}
 	return 0, false
@@ -392,8 +392,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCaddyInput,
 		ec.unmarshalInputGetBookingInput,
 		ec.unmarshalInputGetCaddyInput,
+		ec.unmarshalInputGetCaddysInput,
 		ec.unmarshalInputPaginationInput,
-		ec.unmarshalInputgetCaddysInput,
 	)
 	first := true
 
@@ -568,10 +568,10 @@ func (ec *executionContext) field_Query_getCaddy_args(ctx context.Context, rawAr
 func (ec *executionContext) field_Query_getCaddys_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 modelgraph.GetCaddyInput
+	var arg0 modelgraph.GetCaddysInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNGetCaddyInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCaddyInput(ctx, tmp)
+		arg0, err = ec.unmarshalNGetCaddysInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCaddysInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1135,8 +1135,8 @@ func (ec *executionContext) fieldContext_BookingData_pagination(ctx context.Cont
 			switch field.Name {
 			case "page":
 				return ec.fieldContext_PaginationType_page(ctx, field)
-			case "pageSize":
-				return ec.fieldContext_PaginationType_pageSize(ctx, field)
+			case "limit":
+				return ec.fieldContext_PaginationType_limit(ctx, field)
 			case "total":
 				return ec.fieldContext_PaginationType_total(ctx, field)
 			}
@@ -1620,8 +1620,8 @@ func (ec *executionContext) fieldContext_CaddyData_pagination(ctx context.Contex
 			switch field.Name {
 			case "page":
 				return ec.fieldContext_PaginationType_page(ctx, field)
-			case "pageSize":
-				return ec.fieldContext_PaginationType_pageSize(ctx, field)
+			case "limit":
+				return ec.fieldContext_PaginationType_limit(ctx, field)
 			case "total":
 				return ec.fieldContext_PaginationType_total(ctx, field)
 			}
@@ -1827,8 +1827,8 @@ func (ec *executionContext) fieldContext_PaginationType_page(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _PaginationType_pageSize(ctx context.Context, field graphql.CollectedField, obj *modelgraph.PaginationType) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_PaginationType_pageSize(ctx, field)
+func (ec *executionContext) _PaginationType_limit(ctx context.Context, field graphql.CollectedField, obj *modelgraph.PaginationType) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PaginationType_limit(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1841,7 +1841,7 @@ func (ec *executionContext) _PaginationType_pageSize(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PageSize, nil
+		return obj.Limit, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1858,7 +1858,7 @@ func (ec *executionContext) _PaginationType_pageSize(ctx context.Context, field 
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_PaginationType_pageSize(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_PaginationType_limit(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PaginationType",
 		Field:      field,
@@ -2142,7 +2142,7 @@ func (ec *executionContext) _Query_getCaddys(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetCaddys(rctx, fc.Args["input"].(modelgraph.GetCaddyInput))
+		return ec.resolvers.Query().GetCaddys(rctx, fc.Args["input"].(modelgraph.GetCaddysInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4335,54 +4335,7 @@ func (ec *executionContext) unmarshalInputGetCaddyInput(ctx context.Context, obj
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputPaginationInput(ctx context.Context, obj interface{}) (modelgraph.PaginationInput, error) {
-	var it modelgraph.PaginationInput
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"page", "pageSize", "orderBy"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "page":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
-			data, err := ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Page = data
-		case "pageSize":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
-			data, err := ec.unmarshalNInt2int(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.PageSize = data
-		case "orderBy":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.OrderBy = data
-		}
-	}
-
-	return it, nil
-}
-
-func (ec *executionContext) unmarshalInputgetCaddysInput(ctx context.Context, obj interface{}) (modelgraph.GetCaddysInput, error) {
+func (ec *executionContext) unmarshalInputGetCaddysInput(ctx context.Context, obj interface{}) (modelgraph.GetCaddysInput, error) {
 	var it modelgraph.GetCaddysInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
@@ -4414,6 +4367,80 @@ func (ec *executionContext) unmarshalInputgetCaddysInput(ctx context.Context, ob
 				return it, err
 			}
 			it.Pagination = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPaginationInput(ctx context.Context, obj interface{}) (modelgraph.PaginationInput, error) {
+	var it modelgraph.PaginationInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"page", "limit", "orderBy", "asc", "leyword", "language"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "page":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Page = data
+		case "limit":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Limit = data
+		case "orderBy":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OrderBy = data
+		case "asc":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("asc"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Asc = data
+		case "leyword":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("leyword"))
+			data, err := ec.unmarshalOString2ᚕᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Leyword = data
+		case "language":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("language"))
+			data, err := ec.unmarshalOLanguageEnum2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Language = data
 		}
 	}
 
@@ -4681,9 +4708,9 @@ func (ec *executionContext) _PaginationType(ctx context.Context, sel ast.Selecti
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "pageSize":
+		case "limit":
 
-			out.Values[i] = ec._PaginationType_pageSize(ctx, field, obj)
+			out.Values[i] = ec._PaginationType_limit(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -5357,6 +5384,11 @@ func (ec *executionContext) unmarshalNGetCaddyInput2cadigoᚑapiᚋgraphᚋmodel
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNGetCaddysInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCaddysInput(ctx context.Context, v interface{}) (modelgraph.GetCaddysInput, error) {
+	res, err := ec.unmarshalInputGetCaddysInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5721,6 +5753,22 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	}
 	res := graphql.MarshalInt(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOLanguageEnum2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx context.Context, v interface{}) (*modelgraph.LanguageEnum, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(modelgraph.LanguageEnum)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOLanguageEnum2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx context.Context, sel ast.SelectionSet, v *modelgraph.LanguageEnum) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {

@@ -41,3 +41,40 @@ func (r *Handler) Caddy(ctx context.Context, input modelgraph.CaddyInput) (*mode
 
 	return &c, nil
 }
+
+// GetCaddy is the resolver for the getCaddy field.
+func (r *Handler) GetCaddy(ctx context.Context, input modelgraph.GetCaddyInput) (*modelgraph.Caddy, error) {
+	panic(fmt.Errorf("not implemented: GetCaddy - getCaddy"))
+}
+
+// GetCaddys is the resolver for the getCaddys field.
+func (r *Handler) GetCaddys(ctx context.Context, input modelgraph.GetCaddysInput) (data *modelgraph.CaddyData, err error) {
+	defaultPagination := new(modelA.Pagination).Init()
+
+	err = copier.Copy(&defaultPagination, &input.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	res, total, err := r.servCaddy.GetAll(ctx, defaultPagination)
+	if err != nil {
+		return nil, err
+	}
+
+	caddyData := []*modelgraph.Caddy{}
+	for _, v := range res {
+		g := v.ToGraph()
+		caddyData = append(caddyData, &g)
+	}
+
+	data = &modelgraph.CaddyData{
+		Data: caddyData,
+		Pagination: &modelgraph.PaginationType{
+			Page:  int(defaultPagination.Page),
+			Limit: int(defaultPagination.Limit),
+			Total: int(total),
+		},
+	}
+
+	return data, nil
+}

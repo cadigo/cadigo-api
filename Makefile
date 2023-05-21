@@ -1,7 +1,6 @@
 gen:
 	- go get github.com/99designs/gqlgen
 	- go run github.com/99designs/gqlgen generate
-	- go run .\plugin\
 bu:
 	- go build -ldflags="-s -w" cmd/api/main.go
 	- strip main 

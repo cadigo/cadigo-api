@@ -74,38 +74,41 @@ type GetCaddyInput struct {
 	ID       *string      `json:"id,omitempty" copier:"Id"`
 }
 
-type PaginationInput struct {
-	Page     int     `json:"page" copier:"Page"`
-	PageSize int     `json:"pageSize" copier:"PageSize"`
-	OrderBy  *string `json:"orderBy,omitempty" copier:"OrderBy"`
-}
-
-type PaginationType struct {
-	Page     int `json:"page" copier:"Page"`
-	PageSize int `json:"pageSize" copier:"PageSize"`
-	Total    int `json:"total" copier:"Total"`
-}
-
 type GetCaddysInput struct {
 	Language   LanguageEnum     `json:"language" copier:"Language"`
 	Pagination *PaginationInput `json:"pagination" copier:"Pagination"`
 }
 
+type PaginationInput struct {
+	Page     int           `json:"page" copier:"Page"`
+	Limit    int           `json:"limit" copier:"Limit"`
+	OrderBy  *string       `json:"orderBy,omitempty" copier:"OrderBy"`
+	Asc      *bool         `json:"asc,omitempty" copier:"Asc"`
+	Leyword  []*string     `json:"leyword,omitempty" copier:"Leyword"`
+	Language *LanguageEnum `json:"language,omitempty" copier:"Language"`
+}
+
+type PaginationType struct {
+	Page  int `json:"page" copier:"Page"`
+	Limit int `json:"limit" copier:"Limit"`
+	Total int `json:"total" copier:"Total"`
+}
+
 type LanguageEnum string
 
 const (
-	LanguageEnumTai LanguageEnum = "TAI"
-	LanguageEnumEng LanguageEnum = "ENG"
+	LanguageEnumTh LanguageEnum = "TH"
+	LanguageEnumEn LanguageEnum = "EN"
 )
 
 var AllLanguageEnum = []LanguageEnum{
-	LanguageEnumTai,
-	LanguageEnumEng,
+	LanguageEnumTh,
+	LanguageEnumEn,
 }
 
 func (e LanguageEnum) IsValid() bool {
 	switch e {
-	case LanguageEnumTai, LanguageEnumEng:
+	case LanguageEnumTh, LanguageEnumEn:
 		return true
 	}
 	return false

@@ -3,20 +3,23 @@
 # https://gqlgen.com/getting-started/
 # GraphQL schema-enum
 enum LanguageEnum {
-  TAI
-  ENG
+  TH
+  EN
 }
 
 # GrapgQL schema-type
 type PaginationType {
   page: Int!
-  pageSize: Int!
+  limit: Int!
   total: Int!
 }
 
 # GrapgQL schema-input
 input PaginationInput {
   page: Int!
-  pageSize: Int!
+  limit: Int!
   orderBy: String
+  asc: Boolean
+  leyword: [String]
+  language: LanguageEnum
 }
