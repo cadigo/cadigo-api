@@ -1,16 +1,16 @@
 package caddyservice
 
 import (
-	"cadigo-api/app/interface/caddyInterface"
+	"cadigo-api/app/interface/caddyinterface"
 	"cadigo-api/app/modela"
 	"context"
 )
 
 type Service struct {
-	repo caddyInterface.CaddyRepository
+	repo caddyinterface.CaddyRepository
 }
 
-func NewService(repo caddyInterface.CaddyRepository) caddyInterface.CaddyService {
+func NewService(repo caddyinterface.CaddyRepository) caddyinterface.CaddyService {
 	return &Service{
 		repo: repo,
 	}

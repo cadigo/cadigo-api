@@ -1,12 +1,8 @@
 package app
 
 import (
-	caddyhandler "cadigo-api/app/handlers/caddy_handler"
-	"cadigo-api/app/injectors"
-	caddyservice "cadigo-api/app/services/caddy_service"
 	"cadigo-api/config"
 	"cadigo-api/db/mongodb/infrastructure"
-	caddyrepository "cadigo-api/db/mongodb/repositories/caddy_repository"
 	"cadigo-api/graph"
 	"log"
 
@@ -34,19 +30,6 @@ func graphqlHandler() gin.HandlerFunc {
 	}
 }
 
-func caddyHandlerInit() *caddyhandler.Handler {
-	mongodbConnector, err := injectors.ProvideMongoDBConnector(&generalConfig)
-	if err != nil {
-		panic(err)
-	}
-	// firebaseMemberRepo := firebaserepo.NewFirebaseMemberRepo(app, client)
-	baseMongoRepo := injectors.ProvideBaseMongoRepo(&generalConfig, mongodbConnector)
-
-	caddyRepo := caddyrepository.NewRepository(baseMongoRepo)
-	caddyServ := caddyservice.NewService(caddyRepo)
-	return caddyhandler.NewHandler(caddyServ)
-}
-
 func playgroundHandler() gin.HandlerFunc {
 
 	h := playground.Handler("GraphQL", "/graphql")
@@ -68,7 +51,7 @@ func loadConfig() {
 	}
 }
 
-func CORSMiddleware() gin.HandlerFunc {
+func corsMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
@@ -89,7 +72,7 @@ func NewApp() error {
 
 	r := gin.Default()
 
-	r.Use(CORSMiddleware())
+	r.Use(corsMiddleware())
 	r.POST("/graphql", graphqlHandler())
 	r.GET("/graphql", playgroundHandler())
 	r.Run()

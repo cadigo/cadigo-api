@@ -1,7 +1,7 @@
 package caddyrepository
 
 import (
-	"cadigo-api/app/interface/caddyInterface"
+	"cadigo-api/app/interface/caddyinterface"
 	"cadigo-api/app/modela"
 	"cadigo-api/db/mongodb/infrastructure"
 	"cadigo-api/db/mongodb/modeld"
@@ -19,7 +19,7 @@ type Repository struct {
 	collection string
 }
 
-func NewRepository(baseMongoRepo *infrastructure.BaseMongoRepo) caddyInterface.CaddyRepository {
+func NewRepository(baseMongoRepo *infrastructure.BaseMongoRepo) caddyinterface.CaddyRepository {
 	return &Repository{
 		baseMongoRepo,
 		_caddyeCollection,

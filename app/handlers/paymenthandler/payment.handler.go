@@ -1,4 +1,4 @@
-package paymentHandler
+package paymenthandler
 
 type Handler struct {
 }

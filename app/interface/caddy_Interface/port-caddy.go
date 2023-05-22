@@ -1,4 +1,4 @@
-package caddyInterface
+package caddyinterface
 
 import (
 	"cadigo-api/app/modela"
