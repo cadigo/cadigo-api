@@ -2,7 +2,6 @@
 
 # GraphQL schema Type
 # Caddy
-
 type CaddyData {
   data: [Caddy!]!
   pagination: PaginationType!
@@ -18,6 +17,7 @@ type Caddy {
   description: String
   time: [String]
   cost: Float
+  images: [String]
 }
 
 # GraphQl schema Input
@@ -37,14 +37,18 @@ input GetCaddysInput {
 # GraphQl schema Input
 # CaddyInput
 input CaddyInput {
+  id: String
   name: String!
   location: String!
   avialability: String!
   skill: [String!]
   start: Int!
-  description: String!
+  description: String
   time: [String!]
   cost: Float!
+  images: [String!]
+  language: LanguageEnum!
+  isActive: Boolean!
 }
 
 # Query
@@ -54,7 +58,7 @@ extend type Query {
 }
 
 # Mutation
-
 extend type Mutation {
-  Caddy(input: CaddyInput!): Caddy!
+  caddy(input: CaddyInput!): Caddy!
+  deleteCaddy(id: String!): Caddy!
 }

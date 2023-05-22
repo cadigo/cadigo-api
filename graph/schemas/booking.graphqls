@@ -2,22 +2,24 @@
 
 # GraphQL schema Type
 # Booking
-
 type BookingData {
   data: [Booking!]!
   pagination: PaginationType!
 }
 
 type Booking {
-  reference: String
-  cancellationReference: String
-  clientReference: String
-  creationDate: String
-  status: String
-  creationUser: String
-  remark: String
-  totalSellingRate: Int
-  totalNet: Int
+  id: String!
+  reference: String!
+  clientReference: String!
+  timeStart: Time!
+  timeEnd: Time!
+  customerID: String!
+  customer: Customer
+  courseGolfID: String!
+  courseGolf: CourseGolf
+  caddyID: String!
+  caddy: Caddy
+  totalNet: Float
   pendingAmount: Int
 }
 
@@ -29,8 +31,8 @@ input GetBookingInput {
 }
 
 # GraphQl schema Input
-# BookingsHistoryInput
-input BookingsHistoryInput {
+# BookingsInput
+input BookingsInput {
   language: LanguageEnum!
   pagination: PaginationInput!
 }
@@ -38,18 +40,23 @@ input BookingsHistoryInput {
 # GraphQl schema Input
 # BookingInput
 input BookingInput {
-  clientReference: String
+  reference: String!
+  timeStart: Time!
+  timeEnd: Time!
+  customerID: String!
+  courseGolfID: String!
+  caddyID: String!
+  remark: String
   language: LanguageEnum!
 }
 
 # Query
 extend type Query {
   getBooking(input: GetBookingInput!): Booking!
-  getBookingsHistory(input: BookingsHistoryInput!): BookingData!
+  getBookings(input: BookingsInput!): BookingData!
 }
 
 # Mutation
-
 extend type Mutation {
   booking(input: BookingInput!): Booking!
 }

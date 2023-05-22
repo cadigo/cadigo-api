@@ -10,6 +10,21 @@ import (
 	"fmt"
 )
 
+// Customer is the resolver for the customer field.
+func (r *bookingResolver) Customer(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.Customer, error) {
+	panic(fmt.Errorf("not implemented: Customer - customer"))
+}
+
+// CourseGolf is the resolver for the courseGolf field.
+func (r *bookingResolver) CourseGolf(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.CourseGolf, error) {
+	panic(fmt.Errorf("not implemented: CourseGolf - courseGolf"))
+}
+
+// Caddy is the resolver for the caddy field.
+func (r *bookingResolver) Caddy(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.Caddy, error) {
+	panic(fmt.Errorf("not implemented: Caddy - caddy"))
+}
+
 // Booking is the resolver for the booking field.
 func (r *mutationResolver) Booking(ctx context.Context, input modelgraph.BookingInput) (*modelgraph.Booking, error) {
 	panic(fmt.Errorf("not implemented: Booking - booking"))
@@ -20,10 +35,13 @@ func (r *queryResolver) GetBooking(ctx context.Context, input modelgraph.GetBook
 	panic(fmt.Errorf("not implemented: GetBooking - getBooking"))
 }
 
-// GetBookingsHistory is the resolver for the getBookingsHistory field.
-func (r *queryResolver) GetBookingsHistory(ctx context.Context, input modelgraph.BookingsHistoryInput) (*modelgraph.BookingData, error) {
-	panic(fmt.Errorf("not implemented: GetBookingsHistory - getBookingsHistory"))
+// GetBookings is the resolver for the getBookings field.
+func (r *queryResolver) GetBookings(ctx context.Context, input modelgraph.BookingsInput) (*modelgraph.BookingData, error) {
+	panic(fmt.Errorf("not implemented: GetBookings - getBookings"))
 }
+
+// Booking returns BookingResolver implementation.
+func (r *Resolver) Booking() BookingResolver { return &bookingResolver{r} }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
@@ -31,5 +49,6 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+type bookingResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

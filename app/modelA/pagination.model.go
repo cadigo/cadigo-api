@@ -1,4 +1,4 @@
-package modelA
+package modela
 
 type Pagination struct {
 	Page     uint         `json:"page,omitempty" copier:"Page"`

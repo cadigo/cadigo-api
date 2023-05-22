@@ -1,16 +1,18 @@
 package caddyInterface
 
 import (
-	"cadigo-api/app/modelA"
+	"cadigo-api/app/modela"
 	"context"
 )
 
 type CaddyRepository interface {
-	Create(ctx context.Context, caddy *modelA.Caddy) (*modelA.Caddy, error)
-	GetAll(ctx context.Context, pagination modelA.Pagination) (result []*modelA.Caddy, total int64, err error)
+	Create(ctx context.Context, caddy *modela.Caddy) (*modela.Caddy, error)
+	Update(ctx context.Context, argID string, record *modela.Caddy) (*modela.Caddy, error)
+	GetAll(ctx context.Context, pagination modela.Pagination) (result []*modela.Caddy, total int64, err error)
 }
 
 type CaddyService interface {
-	Create(ctx context.Context, caddy *modelA.Caddy) (*modelA.Caddy, error)
-	GetAll(ctx context.Context, pagination modelA.Pagination) (result []*modelA.Caddy, total int64, err error)
+	Create(ctx context.Context, caddy *modela.Caddy) (*modela.Caddy, error)
+	Update(ctx context.Context, argID string, record *modela.Caddy) (*modela.Caddy, error)
+	GetAll(ctx context.Context, pagination modela.Pagination) (result []*modela.Caddy, total int64, err error)
 }

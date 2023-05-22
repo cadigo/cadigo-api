@@ -1,4 +1,4 @@
-package modelD
+package modeld
 
 type Payment struct {
 	BaseBSONModel

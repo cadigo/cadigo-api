@@ -1,4 +1,4 @@
-package modelA
+package modela
 
 type LanguageType string
 

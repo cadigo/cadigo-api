@@ -1,22 +1,39 @@
-package modelD
+package modeld
 
-import "cadigo-api/app/modelA"
+import (
+	"cadigo-api/app/modela"
+	"fmt"
+	"time"
+)
 
 type Caddy struct {
-	BaseBSONModel
-	Language     string   `bson:"language" copier:"Language"`
-	Name         string   `bson:"name" copier:"Name"`
-	Location     string   `bson:"location,omitempty" copier:"Location"`
-	Avialability string   `bson:"avialability,omitempty" copier:"Avialability"`
-	Skill        []string `bson:"skill,omitempty" copier:"Skill"`
-	Start        int      `bson:"start,omitempty" copier:"Start"`
-	Description  string   `bson:"description,omitempty" copier:"Description"`
-	Time         []string `bson:"time,omitempty" copier:"Time"`
-	Tags         []string `bson:"tags,omitempty" copier:"Tags"`
-	Cost         float64  `bson:"cost" copier:"Cost"`
+	BaseBSONModel `bson:",inline"`
+	Language      string   `bson:"language" copier:"Language"`
+	Name          string   `bson:"name" copier:"Name"`
+	Location      string   `bson:"location,omitempty" copier:"Location"`
+	Avialability  string   `bson:"avialability,omitempty" copier:"Avialability"`
+	Skill         []string `bson:"skill,omitempty" copier:"Skill"`
+	Start         int      `bson:"start,omitempty" copier:"Start"`
+	Description   string   `bson:"description,omitempty" copier:"Description"`
+	Time          []string `bson:"time,omitempty" copier:"Time"`
+	Tags          []string `bson:"tags,omitempty" copier:"Tags"`
+	Cost          float64  `bson:"cost" copier:"Cost"`
 }
 
-func (this *Caddy) ToCaddy() modelA.Caddy {
+func (this Caddy) Init() Caddy {
+	this.BaseBSONModel.CreatedAt = time.Now()
+	this.BaseBSONModel.UpdatedAt = time.Now()
+
+	return this
+}
+
+func (this Caddy) Update() Caddy {
+	this.BaseBSONModel.UpdatedAt = time.Now()
+
+	return this
+}
+
+func (this Caddy) ToCaddy() modela.Caddy {
 	var skill []string
 	var time []string
 
@@ -28,7 +45,10 @@ func (this *Caddy) ToCaddy() modelA.Caddy {
 		time = append(time, v)
 	}
 
-	return modelA.Caddy{
+	fmt.Println(this.RawID.Hex())
+
+	return modela.Caddy{
+		ID:           this.RawID.Hex(),
 		Name:         this.Name,
 		Location:     this.Location,
 		Avialability: this.Avialability,

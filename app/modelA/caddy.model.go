@@ -1,4 +1,4 @@
-package modelA
+package modela
 
 import (
 	"cadigo-api/graph/modelgraph"

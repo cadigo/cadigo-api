@@ -1,0 +1,52 @@
+type CourseGolfData {
+  data: [CourseGolf!]!
+  pagination: PaginationType!
+}
+
+type CourseGolf {
+  id: String!
+  name: String!
+  images: [String!]
+  available: Int!
+  location: String!
+  latitude: Float!
+  longitude: Float!
+  isActive: Boolean!
+}
+
+# GraphQl schema Input
+# GetgetCourseGolfInput
+input GetgetCourseGolfInput {
+  language: LanguageEnum!
+  id: String
+}
+
+# GetgetCourseGolfsInput
+input GetgetCourseGolfsInput {
+  language: LanguageEnum!
+  pagination: PaginationInput!
+}
+
+# CourseGolfInput
+input CourseGolfInput {
+  id: String
+  name: String!
+  images: [String!]
+  available: Int!
+  location: String!
+  latitude: Float!
+  longitude: Float!
+  isActive: Boolean!
+}
+
+# Query
+extend type Query {
+  getCourseGolf(input: GetgetCourseGolfInput!): CourseGolf!
+  getCourseGolfs(input: GetgetCourseGolfsInput!): CourseGolfData!
+}
+
+# Mutation
+extend type Mutation {
+  courseGolf(input: CourseGolfInput!): CourseGolf!
+  deleteCourseGolf(id: String!): CourseGolf!
+}

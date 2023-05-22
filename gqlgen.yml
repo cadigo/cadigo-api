@@ -71,6 +71,14 @@ omit_getters: true
 # modelgen, the others will be allowed when binding to fields. Configure them to
 # your liking
 models:
+  Booking:
+    fields:
+      customer:
+        resolver: true
+      courseGolf:
+        resolver: true
+      caddy:
+        resolver: true
   ID:
     model:
       - github.com/99designs/gqlgen/graphql.ID
@@ -88,9 +96,6 @@ models:
   Boolean:
     model:
       - github.com/99designs/gqlgen/graphql.Boolean
-  Date:
+  Time:
     model:
-      - github.com/nrfta/go-graphql-scalars.Date
-  DateTime:
-    model:
-      - github.com/nrfta/go-graphql-scalars.DateTime
+      - github.com/99designs/gqlgen/graphql.Time

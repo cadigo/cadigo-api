@@ -6,19 +6,23 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 )
 
 type Booking struct {
-	Reference             *string `json:"reference,omitempty" copier:"Reference"`
-	CancellationReference *string `json:"cancellationReference,omitempty" copier:"CancellationReference"`
-	ClientReference       *string `json:"clientReference,omitempty" copier:"ClientReference"`
-	CreationDate          *string `json:"creationDate,omitempty" copier:"CreationDate"`
-	Status                *string `json:"status,omitempty" copier:"Status"`
-	CreationUser          *string `json:"creationUser,omitempty" copier:"CreationUser"`
-	Remark                *string `json:"remark,omitempty" copier:"Remark"`
-	TotalSellingRate      *int    `json:"totalSellingRate,omitempty" copier:"TotalSellingRate"`
-	TotalNet              *int    `json:"totalNet,omitempty" copier:"TotalNet"`
-	PendingAmount         *int    `json:"pendingAmount,omitempty" copier:"PendingAmount"`
+	ID              string      `json:"id" copier:"Id"`
+	Reference       string      `json:"reference" copier:"Reference"`
+	ClientReference string      `json:"clientReference" copier:"ClientReference"`
+	TimeStart       time.Time   `json:"timeStart" copier:"TimeStart"`
+	TimeEnd         time.Time   `json:"timeEnd" copier:"TimeEnd"`
+	CustomerID      string      `json:"customerID" copier:"CustomerID"`
+	Customer        *Customer   `json:"customer,omitempty" copier:"Customer"`
+	CourseGolfID    string      `json:"courseGolfID" copier:"CourseGolfID"`
+	CourseGolf      *CourseGolf `json:"courseGolf,omitempty" copier:"CourseGolf"`
+	CaddyID         string      `json:"caddyID" copier:"CaddyID"`
+	Caddy           *Caddy      `json:"caddy,omitempty" copier:"Caddy"`
+	TotalNet        *float64    `json:"totalNet,omitempty" copier:"TotalNet"`
+	PendingAmount   *int        `json:"pendingAmount,omitempty" copier:"PendingAmount"`
 }
 
 type BookingData struct {
@@ -27,11 +31,17 @@ type BookingData struct {
 }
 
 type BookingInput struct {
-	ClientReference *string      `json:"clientReference,omitempty" copier:"ClientReference"`
-	Language        LanguageEnum `json:"language" copier:"Language"`
+	Reference    string       `json:"reference" copier:"Reference"`
+	TimeStart    time.Time    `json:"timeStart" copier:"TimeStart"`
+	TimeEnd      time.Time    `json:"timeEnd" copier:"TimeEnd"`
+	CustomerID   string       `json:"customerID" copier:"CustomerID"`
+	CourseGolfID string       `json:"courseGolfID" copier:"CourseGolfID"`
+	CaddyID      string       `json:"caddyID" copier:"CaddyID"`
+	Remark       *string      `json:"remark,omitempty" copier:"Remark"`
+	Language     LanguageEnum `json:"language" copier:"Language"`
 }
 
-type BookingsHistoryInput struct {
+type BookingsInput struct {
 	Language   LanguageEnum     `json:"language" copier:"Language"`
 	Pagination *PaginationInput `json:"pagination" copier:"Pagination"`
 }
@@ -46,6 +56,7 @@ type Caddy struct {
 	Description  *string   `json:"description,omitempty" copier:"Description"`
 	Time         []*string `json:"time,omitempty" copier:"Time"`
 	Cost         *float64  `json:"cost,omitempty" copier:"Cost"`
+	Images       []*string `json:"images,omitempty" copier:"Images"`
 }
 
 type CaddyData struct {
@@ -54,14 +65,52 @@ type CaddyData struct {
 }
 
 type CaddyInput struct {
-	Name         string   `json:"name" copier:"Name"`
-	Location     string   `json:"location" copier:"Location"`
-	Avialability string   `json:"avialability" copier:"Avialability"`
-	Skill        []string `json:"skill,omitempty" copier:"Skill"`
-	Start        int      `json:"start" copier:"Start"`
-	Description  string   `json:"description" copier:"Description"`
-	Time         []string `json:"time,omitempty" copier:"Time"`
-	Cost         float64  `json:"cost" copier:"Cost"`
+	ID           *string      `json:"id,omitempty" copier:"Id"`
+	Name         string       `json:"name" copier:"Name"`
+	Location     string       `json:"location" copier:"Location"`
+	Avialability string       `json:"avialability" copier:"Avialability"`
+	Skill        []string     `json:"skill,omitempty" copier:"Skill"`
+	Start        int          `json:"start" copier:"Start"`
+	Description  *string      `json:"description,omitempty" copier:"Description"`
+	Time         []string     `json:"time,omitempty" copier:"Time"`
+	Cost         float64      `json:"cost" copier:"Cost"`
+	Images       []string     `json:"images,omitempty" copier:"Images"`
+	Language     LanguageEnum `json:"language" copier:"Language"`
+	IsActive     bool         `json:"isActive" copier:"IsActive"`
+}
+
+type CourseGolf struct {
+	ID        string   `json:"id" copier:"Id"`
+	Name      string   `json:"name" copier:"Name"`
+	Images    []string `json:"images,omitempty" copier:"Images"`
+	Available int      `json:"available" copier:"Available"`
+	Location  string   `json:"location" copier:"Location"`
+	Latitude  float64  `json:"latitude" copier:"Latitude"`
+	Longitude float64  `json:"longitude" copier:"Longitude"`
+	IsActive  bool     `json:"isActive" copier:"IsActive"`
+}
+
+type CourseGolfData struct {
+	Data       []*CourseGolf   `json:"data" copier:"Data"`
+	Pagination *PaginationType `json:"pagination" copier:"Pagination"`
+}
+
+type CourseGolfInput struct {
+	ID        *string  `json:"id,omitempty" copier:"Id"`
+	Name      string   `json:"name" copier:"Name"`
+	Images    []string `json:"images,omitempty" copier:"Images"`
+	Available int      `json:"available" copier:"Available"`
+	Location  string   `json:"location" copier:"Location"`
+	Latitude  float64  `json:"latitude" copier:"Latitude"`
+	Longitude float64  `json:"longitude" copier:"Longitude"`
+	IsActive  bool     `json:"isActive" copier:"IsActive"`
+}
+
+type Customer struct {
+	ID     *string   `json:"id,omitempty" copier:"Id"`
+	UserID *string   `json:"userID,omitempty" copier:"UserID"`
+	Name   *string   `json:"name,omitempty" copier:"Name"`
+	Images []*string `json:"images,omitempty" copier:"Images"`
 }
 
 type GetBookingInput struct {
@@ -79,6 +128,16 @@ type GetCaddysInput struct {
 	Pagination *PaginationInput `json:"pagination" copier:"Pagination"`
 }
 
+type GetgetCourseGolfInput struct {
+	Language LanguageEnum `json:"language" copier:"Language"`
+	ID       *string      `json:"id,omitempty" copier:"Id"`
+}
+
+type GetgetCourseGolfsInput struct {
+	Language   LanguageEnum     `json:"language" copier:"Language"`
+	Pagination *PaginationInput `json:"pagination" copier:"Pagination"`
+}
+
 type PaginationInput struct {
 	Page     int           `json:"page" copier:"Page"`
 	Limit    int           `json:"limit" copier:"Limit"`
@@ -92,6 +151,10 @@ type PaginationType struct {
 	Page  int `json:"page" copier:"Page"`
 	Limit int `json:"limit" copier:"Limit"`
 	Total int `json:"total" copier:"Total"`
+}
+
+type Payment struct {
+	ID *string `json:"id,omitempty" copier:"Id"`
 }
 
 type LanguageEnum string

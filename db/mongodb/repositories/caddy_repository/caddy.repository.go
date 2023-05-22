@@ -1,13 +1,12 @@
-package caddyRepository
+package caddyrepository
 
 import (
 	"cadigo-api/app/interface/caddyInterface"
-	"cadigo-api/app/modelA"
+	"cadigo-api/app/modela"
 	"cadigo-api/db/mongodb/infrastructure"
-	"cadigo-api/db/mongodb/modelD"
+	"cadigo-api/db/mongodb/modeld"
+	"cadigo-api/db/mongodb/repositories"
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/jinzhu/copier"
 	"go.mongodb.org/mongo-driver/bson"
@@ -27,23 +26,18 @@ func NewRepository(baseMongoRepo *infrastructure.BaseMongoRepo) caddyInterface.C
 	}
 }
 
-func (repo *Repository) Create(ctx context.Context, record *modelA.Caddy) (*modelA.Caddy, error) {
-	caddy := modelD.Caddy{}
+func (repo *Repository) Create(ctx context.Context, record *modela.Caddy) (*modela.Caddy, error) {
+	caddy := new(modeld.Caddy).Init()
 	err := copier.Copy(&caddy, record)
 
 	if err != nil {
 		return nil, err
 	}
 
-	{
-		c, _ := json.Marshal(caddy)
-		fmt.Println(string(c))
-	}
-
 	collection := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
-	result, err := collection.InsertOne(ctx, caddy)
+	result, err := collection.InsertOne(ctx, &caddy)
 	if err != nil {
-		return record, err
+		return nil, err
 	}
 
 	id := result.InsertedID.(primitive.ObjectID).Hex()
@@ -52,17 +46,32 @@ func (repo *Repository) Create(ctx context.Context, record *modelA.Caddy) (*mode
 	return record, nil
 }
 
-func (repo *Repository) Update(ctx context.Context, argID string, record *modelA.Caddy) (*modelA.Caddy, error) {
+func (repo *Repository) Update(ctx context.Context, argID string, record *modela.Caddy) (*modela.Caddy, error) {
+	var (
+		err    error
+		result modeld.Caddy
+		update bson.M
+	)
+
+	caddy := new(modeld.Caddy).Init()
+	err = copier.Copy(&caddy, record)
+	if err != nil {
+		return nil, err
+	}
+
+	update, err = repositories.ParseUpdate(caddy)
+	if err != nil {
+		return nil, err
+	}
+
 	coll := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
 	id, _ := primitive.ObjectIDFromHex(argID)
 	filter := bson.D{{Key: "_id", Value: id}}
-	update := bson.D{{Key: "$set", Value: bson.D{{Key: "avg_rating", Value: 4.4}}}}
 
-	result := modelD.Caddy{}
-	err := coll.FindOneAndUpdate(
+	err = coll.FindOneAndUpdate(
 		ctx,
 		filter,
-		update,
+		bson.D{{Key: "$set", Value: update}},
 		options.FindOneAndUpdate().SetReturnDocument(options.After), // <- Set option to return document after update (important)
 	).Decode(&result)
 	if err != nil {
@@ -74,11 +83,11 @@ func (repo *Repository) Update(ctx context.Context, argID string, record *modelA
 	return &r, nil
 }
 
-func (repo *Repository) Replace(ctx context.Context, argID string, record *modelA.Caddy) (*modelA.Caddy, error) {
+func (repo *Repository) Replace(ctx context.Context, argID string, record *modela.Caddy) (*modela.Caddy, error) {
 	coll := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
 	id, _ := primitive.ObjectIDFromHex(argID)
 	filter := bson.D{{Key: "_id", Value: id}}
-	replacement := modelD.Caddy{
+	replacement := modeld.Caddy{
 		Language: record.Location,
 	}
 
@@ -90,7 +99,7 @@ func (repo *Repository) Replace(ctx context.Context, argID string, record *model
 	return nil, nil
 }
 
-func (repo *Repository) Delete(ctx context.Context, argID string, record *modelA.Caddy) (*modelA.Caddy, error) {
+func (repo *Repository) Delete(ctx context.Context, argID string, record *modela.Caddy) (*modela.Caddy, error) {
 	coll := repo.MongodbConnector.DB(ctx).Collection("movies")
 	filter := bson.D{{Key: "title", Value: "Twilight"}}
 	_, err := coll.DeleteOne(context.TODO(), filter)
@@ -101,10 +110,10 @@ func (repo *Repository) Delete(ctx context.Context, argID string, record *modelA
 	return nil, nil
 }
 
-func (repo *Repository) GetByID(ctx context.Context, id string) (*modelD.Caddy, error) {
+func (repo *Repository) GetByID(ctx context.Context, id string) (*modeld.Caddy, error) {
 	var (
 		err   error
-		caddy modelD.Caddy
+		caddy modeld.Caddy
 	)
 
 	collection := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
@@ -116,12 +125,12 @@ func (repo *Repository) GetByID(ctx context.Context, id string) (*modelD.Caddy, 
 	return &caddy, nil
 }
 
-func (repo *Repository) GetAll(ctx context.Context, pagination modelA.Pagination) (result []*modelA.Caddy, total int64, err error) {
+func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination) (result []*modela.Caddy, total int64, err error) {
 	query := bson.M{}
 	opts := options.Find().
 		SetSort(bson.M{pagination.OrderBy: 1}).
 		SetLimit(int64(pagination.Limit)).
-		SetSkip(int64(pagination.Page * pagination.Limit))
+		SetSkip(int64((pagination.Page - 1) * pagination.Limit))
 
 	collection := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
 	total, err = collection.CountDocuments(ctx, query)
@@ -134,15 +143,14 @@ func (repo *Repository) GetAll(ctx context.Context, pagination modelA.Pagination
 		return result, total, err
 	}
 
-	caddy := []modelD.Caddy{}
+	caddy := []modeld.Caddy{}
 	if err = curs.All(ctx, &caddy); err != nil {
 		return result, total, err
 	}
 
-	result = []*modelA.Caddy{}
+	result = []*modela.Caddy{}
 	for _, c := range caddy {
-		r := modelA.Caddy{}
-		copier.Copy(&r, &c)
+		r := c.ToCaddy()
 		result = append(result, &r)
 	}
 

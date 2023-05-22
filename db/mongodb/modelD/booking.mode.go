@@ -1,4 +1,4 @@
-package modelD
+package modeld
 
 type Booking struct {
 	BaseBSONModel

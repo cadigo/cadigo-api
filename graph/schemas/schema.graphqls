@@ -1,6 +1,9 @@
 # GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
+scalar Upload
+scalar Time
+
 # GraphQL schema-enum
 enum LanguageEnum {
   TH

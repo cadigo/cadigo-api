@@ -1,12 +1,12 @@
 package app
 
 import (
-	"cadigo-api/app/handlers/caddyHandler"
+	caddyhandler "cadigo-api/app/handlers/caddy_handler"
 	"cadigo-api/app/injectors"
-	"cadigo-api/app/services/caddyService"
+	caddyservice "cadigo-api/app/services/caddy_service"
 	"cadigo-api/config"
 	"cadigo-api/db/mongodb/infrastructure"
-	"cadigo-api/db/mongodb/repositories/caddyRepository"
+	caddyrepository "cadigo-api/db/mongodb/repositories/caddy_repository"
 	"cadigo-api/graph"
 	"log"
 
@@ -34,7 +34,7 @@ func graphqlHandler() gin.HandlerFunc {
 	}
 }
 
-func caddyHandlerInit() *caddyHandler.Handler {
+func caddyHandlerInit() *caddyhandler.Handler {
 	mongodbConnector, err := injectors.ProvideMongoDBConnector(&generalConfig)
 	if err != nil {
 		panic(err)
@@ -42,9 +42,9 @@ func caddyHandlerInit() *caddyHandler.Handler {
 	// firebaseMemberRepo := firebaserepo.NewFirebaseMemberRepo(app, client)
 	baseMongoRepo := injectors.ProvideBaseMongoRepo(&generalConfig, mongodbConnector)
 
-	caddyRepo := caddyRepository.NewRepository(baseMongoRepo)
-	caddyServ := caddyService.NewService(caddyRepo)
-	return caddyHandler.NewHandler(caddyServ)
+	caddyRepo := caddyrepository.NewRepository(baseMongoRepo)
+	caddyServ := caddyservice.NewService(caddyRepo)
+	return caddyhandler.NewHandler(caddyServ)
 }
 
 func playgroundHandler() gin.HandlerFunc {

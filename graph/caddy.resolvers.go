@@ -7,11 +7,17 @@ package graph
 import (
 	"cadigo-api/graph/modelgraph"
 	"context"
+	"fmt"
 )
 
 // Caddy is the resolver for the Caddy field.
 func (r *mutationResolver) Caddy(ctx context.Context, input modelgraph.CaddyInput) (*modelgraph.Caddy, error) {
 	return r.CaddyHandler.Caddy(ctx, input)
+}
+
+// DeleteCaddy is the resolver for the deleteCaddy field.
+func (r *mutationResolver) DeleteCaddy(ctx context.Context, id string) (*modelgraph.Caddy, error) {
+	panic(fmt.Errorf("not implemented: DeleteCaddy - deleteCaddy"))
 }
 
 // GetCaddy is the resolver for the getCaddy field.

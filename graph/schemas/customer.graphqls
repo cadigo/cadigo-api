@@ -1,0 +1,6 @@
+type Customer {
+  id: String
+  userID: String
+  name: String
+  images: [String]
+}
