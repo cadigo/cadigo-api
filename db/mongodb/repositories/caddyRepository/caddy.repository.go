@@ -55,8 +55,8 @@ func (repo *Repository) Create(ctx context.Context, record *modelA.Caddy) (*mode
 func (repo *Repository) Update(ctx context.Context, argID string, record *modelA.Caddy) (*modelA.Caddy, error) {
 	coll := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
 	id, _ := primitive.ObjectIDFromHex(argID)
-	filter := bson.D{{"_id", id}}
-	update := bson.D{{"$set", bson.D{{"avg_rating", 4.4}}}}
+	filter := bson.D{{Key: "_id", Value: id}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "avg_rating", Value: 4.4}}}}
 
 	result := modelD.Caddy{}
 	err := coll.FindOneAndUpdate(
@@ -77,7 +77,7 @@ func (repo *Repository) Update(ctx context.Context, argID string, record *modelA
 func (repo *Repository) Replace(ctx context.Context, argID string, record *modelA.Caddy) (*modelA.Caddy, error) {
 	coll := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
 	id, _ := primitive.ObjectIDFromHex(argID)
-	filter := bson.D{{"_id", id}}
+	filter := bson.D{{Key: "_id", Value: id}}
 	replacement := modelD.Caddy{
 		Language: record.Location,
 	}
@@ -92,7 +92,7 @@ func (repo *Repository) Replace(ctx context.Context, argID string, record *model
 
 func (repo *Repository) Delete(ctx context.Context, argID string, record *modelA.Caddy) (*modelA.Caddy, error) {
 	coll := repo.MongodbConnector.DB(ctx).Collection("movies")
-	filter := bson.D{{"title", "Twilight"}}
+	filter := bson.D{{Key: "title", Value: "Twilight"}}
 	_, err := coll.DeleteOne(context.TODO(), filter)
 	if err != nil {
 		return nil, err
@@ -101,14 +101,14 @@ func (repo *Repository) Delete(ctx context.Context, argID string, record *modelA
 	return nil, nil
 }
 
-func (repo *Repository) GetByURL(ctx context.Context, url string) (*modelD.Caddy, error) {
+func (repo *Repository) GetByID(ctx context.Context, id string) (*modelD.Caddy, error) {
 	var (
 		err   error
 		caddy modelD.Caddy
 	)
 
 	collection := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
-	err = collection.FindOne(ctx, bson.M{"url": url}).Decode(&caddy)
+	err = collection.FindOne(ctx, bson.M{"_id": id}).Decode(&caddy)
 	if err != nil {
 		return &caddy, err
 	}
