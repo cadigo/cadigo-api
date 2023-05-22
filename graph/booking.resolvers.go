@@ -7,37 +7,36 @@ package graph
 import (
 	"cadigo-api/graph/modelgraph"
 	"context"
-	"fmt"
 )
 
 // Customer is the resolver for the customer field.
 func (r *bookingResolver) Customer(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.Customer, error) {
-	panic(fmt.Errorf("not implemented: Customer - customer"))
+	return r.BookingHandler.Customer(ctx, obj)
 }
 
 // CourseGolf is the resolver for the courseGolf field.
 func (r *bookingResolver) CourseGolf(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.CourseGolf, error) {
-	panic(fmt.Errorf("not implemented: CourseGolf - courseGolf"))
+	return r.BookingHandler.CourseGolf(ctx, obj)
 }
 
 // Caddy is the resolver for the caddy field.
 func (r *bookingResolver) Caddy(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.Caddy, error) {
-	panic(fmt.Errorf("not implemented: Caddy - caddy"))
+	return r.BookingHandler.Caddy(ctx, obj)
 }
 
 // Booking is the resolver for the booking field.
 func (r *mutationResolver) Booking(ctx context.Context, input modelgraph.BookingInput) (*modelgraph.Booking, error) {
-	panic(fmt.Errorf("not implemented: Booking - booking"))
+	return r.BookingHandler.Booking(ctx, input)
 }
 
 // GetBooking is the resolver for the getBooking field.
 func (r *queryResolver) GetBooking(ctx context.Context, input modelgraph.GetBookingInput) (*modelgraph.Booking, error) {
-	panic(fmt.Errorf("not implemented: GetBooking - getBooking"))
+	return r.BookingHandler.GetBooking(ctx, input)
 }
 
 // GetBookings is the resolver for the getBookings field.
 func (r *queryResolver) GetBookings(ctx context.Context, input modelgraph.BookingsInput) (*modelgraph.BookingData, error) {
-	panic(fmt.Errorf("not implemented: GetBookings - getBookings"))
+	return r.BookingHandler.GetBookings(ctx, input)
 }
 
 // Booking returns BookingResolver implementation.

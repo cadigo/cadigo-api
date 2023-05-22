@@ -10,7 +10,6 @@ type BookingData {
 type Booking {
   id: String!
   reference: String!
-  clientReference: String!
   timeStart: Time!
   timeEnd: Time!
   customerID: String!
@@ -20,7 +19,6 @@ type Booking {
   caddyID: String!
   caddy: Caddy
   totalNet: Float
-  pendingAmount: Int
 }
 
 # GraphQl schema Input
@@ -35,6 +33,7 @@ input GetBookingInput {
 input BookingsInput {
   language: LanguageEnum!
   pagination: PaginationInput!
+  status: String
 }
 
 # GraphQl schema Input

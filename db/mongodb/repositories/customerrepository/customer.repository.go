@@ -1,7 +1,7 @@
-package caddyrepository
+package customerrepository
 
 import (
-	"cadigo-api/app/interface/caddyinterface"
+	"cadigo-api/app/interface/customerinterface"
 	"cadigo-api/app/modela"
 	"cadigo-api/db/mongodb/infrastructure"
 	"cadigo-api/db/mongodb/modeld"
@@ -19,23 +19,23 @@ type Repository struct {
 	collection string
 }
 
-func NewRepository(baseMongoRepo *infrastructure.BaseMongoRepo) caddyinterface.CaddyRepository {
+func NewRepository(baseMongoRepo *infrastructure.BaseMongoRepo) customerinterface.CustomerRepository {
 	return &Repository{
 		baseMongoRepo,
-		_caddyCollection,
+		_customerCollection,
 	}
 }
 
-func (repo *Repository) Create(ctx context.Context, record *modela.Caddy) (*modela.Caddy, error) {
-	caddy := new(modeld.Caddy).Init()
-	err := copier.Copy(&caddy, record)
+func (repo *Repository) Create(ctx context.Context, record *modela.Customer) (*modela.Customer, error) {
+	customer := new(modeld.Customer).Init()
+	err := copier.Copy(&customer, record)
 
 	if err != nil {
 		return nil, err
 	}
 
 	collection := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
-	result, err := collection.InsertOne(ctx, &caddy)
+	result, err := collection.InsertOne(ctx, &customer)
 	if err != nil {
 		return nil, err
 	}
@@ -46,20 +46,20 @@ func (repo *Repository) Create(ctx context.Context, record *modela.Caddy) (*mode
 	return record, nil
 }
 
-func (repo *Repository) Update(ctx context.Context, argID string, record *modela.Caddy) (*modela.Caddy, error) {
+func (repo *Repository) Update(ctx context.Context, argID string, record *modela.Customer) (*modela.Customer, error) {
 	var (
 		err    error
-		result modeld.Caddy
+		result modeld.Customer
 		update bson.M
 	)
 
-	caddy := new(modeld.Caddy).Init()
-	err = copier.Copy(&caddy, record)
+	customer := new(modeld.Customer).Init()
+	err = copier.Copy(&customer, record)
 	if err != nil {
 		return nil, err
 	}
 
-	update, err = repositories.ParseUpdate(caddy)
+	update, err = repositories.ParseUpdate(customer)
 	if err != nil {
 		return nil, err
 	}
@@ -78,17 +78,17 @@ func (repo *Repository) Update(ctx context.Context, argID string, record *modela
 		return nil, err
 	}
 
-	r := result.ToCaddy()
+	r := result.ToCustomer()
 
 	return &r, nil
 }
 
-func (repo *Repository) Replace(ctx context.Context, argID string, record *modela.Caddy) (*modela.Caddy, error) {
+func (repo *Repository) Replace(ctx context.Context, argID string, record *modela.Customer) (*modela.Customer, error) {
 	coll := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
 	id, _ := primitive.ObjectIDFromHex(argID)
 	filter := bson.D{{Key: "_id", Value: id}}
-	replacement := modeld.Caddy{
-		Language: record.Location,
+	replacement := modeld.Customer{
+		// Language: record.Location,
 	}
 
 	_, err := coll.ReplaceOne(context.TODO(), filter, replacement)
@@ -99,7 +99,7 @@ func (repo *Repository) Replace(ctx context.Context, argID string, record *model
 	return nil, nil
 }
 
-func (repo *Repository) Delete(ctx context.Context, argID string, record *modela.Caddy) (*modela.Caddy, error) {
+func (repo *Repository) Delete(ctx context.Context, argID string, record *modela.Customer) (*modela.Customer, error) {
 	coll := repo.MongodbConnector.DB(ctx).Collection("movies")
 	filter := bson.D{{Key: "title", Value: "Twilight"}}
 	_, err := coll.DeleteOne(context.TODO(), filter)
@@ -110,10 +110,10 @@ func (repo *Repository) Delete(ctx context.Context, argID string, record *modela
 	return nil, nil
 }
 
-func (repo *Repository) GetByID(ctx context.Context, id string) (*modela.Caddy, error) {
+func (repo *Repository) GetByID(ctx context.Context, id string) (*modela.Customer, error) {
 	var (
-		err   error
-		caddy modeld.Caddy
+		err      error
+		customer modeld.Customer
 	)
 
 	collection := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
@@ -122,17 +122,17 @@ func (repo *Repository) GetByID(ctx context.Context, id string) (*modela.Caddy, 
 		return nil, err
 	}
 
-	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&caddy)
+	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&customer)
 	if err != nil {
 		return nil, err
 	}
 
-	c := caddy.ToCaddy()
+	c := customer.ToCustomer()
 
 	return &c, nil
 }
 
-func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination) (result []*modela.Caddy, total int64, err error) {
+func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination) (result []*modela.Customer, total int64, err error) {
 	query := bson.M{}
 	opts := options.Find().
 		SetSort(bson.M{pagination.OrderBy: 1}).
@@ -150,14 +150,14 @@ func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination
 		return result, total, err
 	}
 
-	caddy := []modeld.Caddy{}
-	if err = curs.All(ctx, &caddy); err != nil {
+	customer := []modeld.Customer{}
+	if err = curs.All(ctx, &customer); err != nil {
 		return result, total, err
 	}
 
-	result = []*modela.Caddy{}
-	for _, c := range caddy {
-		r := c.ToCaddy()
+	result = []*modela.Customer{}
+	for _, c := range customer {
+		r := c.ToCustomer()
 		result = append(result, &r)
 	}
 

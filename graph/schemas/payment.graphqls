@@ -1,3 +1,53 @@
 type Payment {
   id: String
+  transactionId: Int
+  amount: Int
+  orderNo: String
+  customerId: String
+  bankCode: String
+  paymentDate: String
+  paymentStatus: Int
+  bankRefCode: String
+  currentDate: String
+  currentTime: String
+  paymentDescription: String
+  creditCardToken: String
+  currency: String
+  customerName: String
+  checkSum: String
+}
+
+# CourseGolfInput
+input GetPaymentInput {
+  language: LanguageEnum!
+  id: String
+}
+
+input PaymentInput {
+  id: String
+  transactionId: Int!
+  amount: Int!
+  orderNo: String!
+  customerId: String!
+  bankCode: String!
+  paymentDate: String!
+  paymentStatus: Int!
+  bankRefCode: String!
+  currentDate: String!
+  currentTime: String!
+  paymentDescription: String!
+  creditCardToken: String!
+  currency: String!
+  customerName: String!
+  checkSum: String!
+}
+
+# Query
+extend type Query {
+  getPayment(input: GetPaymentInput!): Payment!
+}
+
+# Mutation
+extend type Mutation {
+  payment(input: PaymentInput!): Payment!
 }

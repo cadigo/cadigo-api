@@ -14,8 +14,8 @@ import (
 
 type Resolver struct {
 	CaddyHandler      *caddyhandler.Handler
-	Bookinghandler    *bookinghandler.Handler
-	Coursegolfhandler *coursegolfhandler.Handler
-	Customerhandler   *customerhandler.Handler
-	Paymenthandler    *paymenthandler.Handler
+	BookingHandler    *bookinghandler.Handler
+	CoursegolfHandler *coursegolfhandler.Handler
+	CustomerHandler   *customerhandler.Handler
+	PaymentHandler    *paymenthandler.Handler
 }

@@ -48,19 +48,17 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Booking struct {
-		Caddy           func(childComplexity int) int
-		CaddyID         func(childComplexity int) int
-		ClientReference func(childComplexity int) int
-		CourseGolf      func(childComplexity int) int
-		CourseGolfID    func(childComplexity int) int
-		Customer        func(childComplexity int) int
-		CustomerID      func(childComplexity int) int
-		ID              func(childComplexity int) int
-		PendingAmount   func(childComplexity int) int
-		Reference       func(childComplexity int) int
-		TimeEnd         func(childComplexity int) int
-		TimeStart       func(childComplexity int) int
-		TotalNet        func(childComplexity int) int
+		Caddy        func(childComplexity int) int
+		CaddyID      func(childComplexity int) int
+		CourseGolf   func(childComplexity int) int
+		CourseGolfID func(childComplexity int) int
+		Customer     func(childComplexity int) int
+		CustomerID   func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Reference    func(childComplexity int) int
+		TimeEnd      func(childComplexity int) int
+		TimeStart    func(childComplexity int) int
+		TotalNet     func(childComplexity int) int
 	}
 
 	BookingData struct {
@@ -113,8 +111,10 @@ type ComplexityRoot struct {
 		Booking          func(childComplexity int, input modelgraph.BookingInput) int
 		Caddy            func(childComplexity int, input modelgraph.CaddyInput) int
 		CourseGolf       func(childComplexity int, input modelgraph.CourseGolfInput) int
+		Customer         func(childComplexity int, input modelgraph.CustomerInput) int
 		DeleteCaddy      func(childComplexity int, id string) int
 		DeleteCourseGolf func(childComplexity int, id string) int
+		Payment          func(childComplexity int, input modelgraph.PaymentInput) int
 	}
 
 	PaginationType struct {
@@ -124,7 +124,22 @@ type ComplexityRoot struct {
 	}
 
 	Payment struct {
-		ID func(childComplexity int) int
+		Amount             func(childComplexity int) int
+		BankCode           func(childComplexity int) int
+		BankRefCode        func(childComplexity int) int
+		CheckSum           func(childComplexity int) int
+		CreditCardToken    func(childComplexity int) int
+		Currency           func(childComplexity int) int
+		CurrentDate        func(childComplexity int) int
+		CurrentTime        func(childComplexity int) int
+		CustomerID         func(childComplexity int) int
+		CustomerName       func(childComplexity int) int
+		ID                 func(childComplexity int) int
+		OrderNo            func(childComplexity int) int
+		PaymentDate        func(childComplexity int) int
+		PaymentDescription func(childComplexity int) int
+		PaymentStatus      func(childComplexity int) int
+		TransactionID      func(childComplexity int) int
 	}
 
 	Query struct {
@@ -132,8 +147,10 @@ type ComplexityRoot struct {
 		GetBookings    func(childComplexity int, input modelgraph.BookingsInput) int
 		GetCaddy       func(childComplexity int, input modelgraph.GetCaddyInput) int
 		GetCaddys      func(childComplexity int, input modelgraph.GetCaddysInput) int
-		GetCourseGolf  func(childComplexity int, input modelgraph.GetgetCourseGolfInput) int
-		GetCourseGolfs func(childComplexity int, input modelgraph.GetgetCourseGolfsInput) int
+		GetCourseGolf  func(childComplexity int, input modelgraph.GetCourseGolfInput) int
+		GetCourseGolfs func(childComplexity int, input modelgraph.GetCourseGolfsInput) int
+		GetCustomer    func(childComplexity int, input modelgraph.GetCustomerInput) int
+		GetPayment     func(childComplexity int, input modelgraph.GetPaymentInput) int
 	}
 }
 
@@ -150,14 +167,18 @@ type MutationResolver interface {
 	DeleteCaddy(ctx context.Context, id string) (*modelgraph.Caddy, error)
 	CourseGolf(ctx context.Context, input modelgraph.CourseGolfInput) (*modelgraph.CourseGolf, error)
 	DeleteCourseGolf(ctx context.Context, id string) (*modelgraph.CourseGolf, error)
+	Customer(ctx context.Context, input modelgraph.CustomerInput) (*modelgraph.Customer, error)
+	Payment(ctx context.Context, input modelgraph.PaymentInput) (*modelgraph.Payment, error)
 }
 type QueryResolver interface {
 	GetBooking(ctx context.Context, input modelgraph.GetBookingInput) (*modelgraph.Booking, error)
 	GetBookings(ctx context.Context, input modelgraph.BookingsInput) (*modelgraph.BookingData, error)
 	GetCaddy(ctx context.Context, input modelgraph.GetCaddyInput) (*modelgraph.Caddy, error)
 	GetCaddys(ctx context.Context, input modelgraph.GetCaddysInput) (*modelgraph.CaddyData, error)
-	GetCourseGolf(ctx context.Context, input modelgraph.GetgetCourseGolfInput) (*modelgraph.CourseGolf, error)
-	GetCourseGolfs(ctx context.Context, input modelgraph.GetgetCourseGolfsInput) (*modelgraph.CourseGolfData, error)
+	GetCourseGolf(ctx context.Context, input modelgraph.GetCourseGolfInput) (*modelgraph.CourseGolf, error)
+	GetCourseGolfs(ctx context.Context, input modelgraph.GetCourseGolfsInput) (*modelgraph.CourseGolfData, error)
+	GetCustomer(ctx context.Context, input modelgraph.GetCustomerInput) (*modelgraph.Customer, error)
+	GetPayment(ctx context.Context, input modelgraph.GetPaymentInput) (*modelgraph.Payment, error)
 }
 
 type executableSchema struct {
@@ -188,13 +209,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Booking.CaddyID(childComplexity), true
-
-	case "Booking.clientReference":
-		if e.complexity.Booking.ClientReference == nil {
-			break
-		}
-
-		return e.complexity.Booking.ClientReference(childComplexity), true
 
 	case "Booking.courseGolf":
 		if e.complexity.Booking.CourseGolf == nil {
@@ -230,13 +244,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Booking.ID(childComplexity), true
-
-	case "Booking.pendingAmount":
-		if e.complexity.Booking.PendingAmount == nil {
-			break
-		}
-
-		return e.complexity.Booking.PendingAmount(childComplexity), true
 
 	case "Booking.reference":
 		if e.complexity.Booking.Reference == nil {
@@ -498,6 +505,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CourseGolf(childComplexity, args["input"].(modelgraph.CourseGolfInput)), true
 
+	case "Mutation.customer":
+		if e.complexity.Mutation.Customer == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_customer_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Customer(childComplexity, args["input"].(modelgraph.CustomerInput)), true
+
 	case "Mutation.deleteCaddy":
 		if e.complexity.Mutation.DeleteCaddy == nil {
 			break
@@ -522,6 +541,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteCourseGolf(childComplexity, args["id"].(string)), true
 
+	case "Mutation.payment":
+		if e.complexity.Mutation.Payment == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_payment_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Payment(childComplexity, args["input"].(modelgraph.PaymentInput)), true
+
 	case "PaginationType.limit":
 		if e.complexity.PaginationType.Limit == nil {
 			break
@@ -543,12 +574,117 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PaginationType.Total(childComplexity), true
 
+	case "Payment.amount":
+		if e.complexity.Payment.Amount == nil {
+			break
+		}
+
+		return e.complexity.Payment.Amount(childComplexity), true
+
+	case "Payment.bankCode":
+		if e.complexity.Payment.BankCode == nil {
+			break
+		}
+
+		return e.complexity.Payment.BankCode(childComplexity), true
+
+	case "Payment.bankRefCode":
+		if e.complexity.Payment.BankRefCode == nil {
+			break
+		}
+
+		return e.complexity.Payment.BankRefCode(childComplexity), true
+
+	case "Payment.checkSum":
+		if e.complexity.Payment.CheckSum == nil {
+			break
+		}
+
+		return e.complexity.Payment.CheckSum(childComplexity), true
+
+	case "Payment.creditCardToken":
+		if e.complexity.Payment.CreditCardToken == nil {
+			break
+		}
+
+		return e.complexity.Payment.CreditCardToken(childComplexity), true
+
+	case "Payment.currency":
+		if e.complexity.Payment.Currency == nil {
+			break
+		}
+
+		return e.complexity.Payment.Currency(childComplexity), true
+
+	case "Payment.currentDate":
+		if e.complexity.Payment.CurrentDate == nil {
+			break
+		}
+
+		return e.complexity.Payment.CurrentDate(childComplexity), true
+
+	case "Payment.currentTime":
+		if e.complexity.Payment.CurrentTime == nil {
+			break
+		}
+
+		return e.complexity.Payment.CurrentTime(childComplexity), true
+
+	case "Payment.customerId":
+		if e.complexity.Payment.CustomerID == nil {
+			break
+		}
+
+		return e.complexity.Payment.CustomerID(childComplexity), true
+
+	case "Payment.customerName":
+		if e.complexity.Payment.CustomerName == nil {
+			break
+		}
+
+		return e.complexity.Payment.CustomerName(childComplexity), true
+
 	case "Payment.id":
 		if e.complexity.Payment.ID == nil {
 			break
 		}
 
 		return e.complexity.Payment.ID(childComplexity), true
+
+	case "Payment.orderNo":
+		if e.complexity.Payment.OrderNo == nil {
+			break
+		}
+
+		return e.complexity.Payment.OrderNo(childComplexity), true
+
+	case "Payment.paymentDate":
+		if e.complexity.Payment.PaymentDate == nil {
+			break
+		}
+
+		return e.complexity.Payment.PaymentDate(childComplexity), true
+
+	case "Payment.paymentDescription":
+		if e.complexity.Payment.PaymentDescription == nil {
+			break
+		}
+
+		return e.complexity.Payment.PaymentDescription(childComplexity), true
+
+	case "Payment.paymentStatus":
+		if e.complexity.Payment.PaymentStatus == nil {
+			break
+		}
+
+		return e.complexity.Payment.PaymentStatus(childComplexity), true
+
+	case "Payment.transactionId":
+		if e.complexity.Payment.TransactionID == nil {
+			break
+		}
+
+		return e.complexity.Payment.TransactionID(childComplexity), true
 
 	case "Query.getBooking":
 		if e.complexity.Query.GetBooking == nil {
@@ -608,7 +744,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetCourseGolf(childComplexity, args["input"].(modelgraph.GetgetCourseGolfInput)), true
+		return e.complexity.Query.GetCourseGolf(childComplexity, args["input"].(modelgraph.GetCourseGolfInput)), true
 
 	case "Query.getCourseGolfs":
 		if e.complexity.Query.GetCourseGolfs == nil {
@@ -620,7 +756,31 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetCourseGolfs(childComplexity, args["input"].(modelgraph.GetgetCourseGolfsInput)), true
+		return e.complexity.Query.GetCourseGolfs(childComplexity, args["input"].(modelgraph.GetCourseGolfsInput)), true
+
+	case "Query.getCustomer":
+		if e.complexity.Query.GetCustomer == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getCustomer_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetCustomer(childComplexity, args["input"].(modelgraph.GetCustomerInput)), true
+
+	case "Query.getPayment":
+		if e.complexity.Query.GetPayment == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getPayment_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetPayment(childComplexity, args["input"].(modelgraph.GetPaymentInput)), true
 
 	}
 	return 0, false
@@ -634,12 +794,16 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputBookingsInput,
 		ec.unmarshalInputCaddyInput,
 		ec.unmarshalInputCourseGolfInput,
+		ec.unmarshalInputCustomerInput,
 		ec.unmarshalInputGetBookingInput,
 		ec.unmarshalInputGetCaddyInput,
 		ec.unmarshalInputGetCaddysInput,
-		ec.unmarshalInputGetgetCourseGolfInput,
-		ec.unmarshalInputGetgetCourseGolfsInput,
+		ec.unmarshalInputGetCourseGolfInput,
+		ec.unmarshalInputGetCourseGolfsInput,
+		ec.unmarshalInputGetCustomerInput,
+		ec.unmarshalInputGetPaymentInput,
 		ec.unmarshalInputPaginationInput,
+		ec.unmarshalInputPaymentInput,
 	)
 	first := true
 
@@ -769,6 +933,21 @@ func (ec *executionContext) field_Mutation_courseGolf_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_customer_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 modelgraph.CustomerInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCustomerInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐCustomerInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteCaddy_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -796,6 +975,21 @@ func (ec *executionContext) field_Mutation_deleteCourseGolf_args(ctx context.Con
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_payment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 modelgraph.PaymentInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNPaymentInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐPaymentInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -877,10 +1071,10 @@ func (ec *executionContext) field_Query_getCaddys_args(ctx context.Context, rawA
 func (ec *executionContext) field_Query_getCourseGolf_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 modelgraph.GetgetCourseGolfInput
+	var arg0 modelgraph.GetCourseGolfInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNGetgetCourseGolfInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetgetCourseGolfInput(ctx, tmp)
+		arg0, err = ec.unmarshalNGetCourseGolfInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCourseGolfInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -892,10 +1086,40 @@ func (ec *executionContext) field_Query_getCourseGolf_args(ctx context.Context, 
 func (ec *executionContext) field_Query_getCourseGolfs_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 modelgraph.GetgetCourseGolfsInput
+	var arg0 modelgraph.GetCourseGolfsInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNGetgetCourseGolfsInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetgetCourseGolfsInput(ctx, tmp)
+		arg0, err = ec.unmarshalNGetCourseGolfsInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCourseGolfsInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getCustomer_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 modelgraph.GetCustomerInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNGetCustomerInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCustomerInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getPayment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 modelgraph.GetPaymentInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNGetPaymentInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetPaymentInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1018,50 +1242,6 @@ func (ec *executionContext) _Booking_reference(ctx context.Context, field graphq
 }
 
 func (ec *executionContext) fieldContext_Booking_reference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Booking",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Booking_clientReference(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Booking) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Booking_clientReference(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ClientReference, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Booking_clientReference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Booking",
 		Field:      field,
@@ -1508,47 +1688,6 @@ func (ec *executionContext) fieldContext_Booking_totalNet(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Booking_pendingAmount(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Booking) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Booking_pendingAmount(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PendingAmount, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*int)
-	fc.Result = res
-	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Booking_pendingAmount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Booking",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _BookingData_data(ctx context.Context, field graphql.CollectedField, obj *modelgraph.BookingData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_BookingData_data(ctx, field)
 	if err != nil {
@@ -1592,8 +1731,6 @@ func (ec *executionContext) fieldContext_BookingData_data(ctx context.Context, f
 				return ec.fieldContext_Booking_id(ctx, field)
 			case "reference":
 				return ec.fieldContext_Booking_reference(ctx, field)
-			case "clientReference":
-				return ec.fieldContext_Booking_clientReference(ctx, field)
 			case "timeStart":
 				return ec.fieldContext_Booking_timeStart(ctx, field)
 			case "timeEnd":
@@ -1612,8 +1749,6 @@ func (ec *executionContext) fieldContext_BookingData_data(ctx context.Context, f
 				return ec.fieldContext_Booking_caddy(ctx, field)
 			case "totalNet":
 				return ec.fieldContext_Booking_totalNet(ctx, field)
-			case "pendingAmount":
-				return ec.fieldContext_Booking_pendingAmount(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Booking", field.Name)
 		},
@@ -2871,8 +3006,6 @@ func (ec *executionContext) fieldContext_Mutation_booking(ctx context.Context, f
 				return ec.fieldContext_Booking_id(ctx, field)
 			case "reference":
 				return ec.fieldContext_Booking_reference(ctx, field)
-			case "clientReference":
-				return ec.fieldContext_Booking_clientReference(ctx, field)
 			case "timeStart":
 				return ec.fieldContext_Booking_timeStart(ctx, field)
 			case "timeEnd":
@@ -2891,8 +3024,6 @@ func (ec *executionContext) fieldContext_Mutation_booking(ctx context.Context, f
 				return ec.fieldContext_Booking_caddy(ctx, field)
 			case "totalNet":
 				return ec.fieldContext_Booking_totalNet(ctx, field)
-			case "pendingAmount":
-				return ec.fieldContext_Booking_pendingAmount(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Booking", field.Name)
 		},
@@ -3211,6 +3342,160 @@ func (ec *executionContext) fieldContext_Mutation_deleteCourseGolf(ctx context.C
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_customer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_customer(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Customer(rctx, fc.Args["input"].(modelgraph.CustomerInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*modelgraph.Customer)
+	fc.Result = res
+	return ec.marshalNCustomer2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCustomer(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_customer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Customer_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_Customer_userID(ctx, field)
+			case "name":
+				return ec.fieldContext_Customer_name(ctx, field)
+			case "images":
+				return ec.fieldContext_Customer_images(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Customer", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_customer_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_payment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_payment(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Payment(rctx, fc.Args["input"].(modelgraph.PaymentInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*modelgraph.Payment)
+	fc.Result = res
+	return ec.marshalNPayment2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPayment(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_payment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Payment_id(ctx, field)
+			case "transactionId":
+				return ec.fieldContext_Payment_transactionId(ctx, field)
+			case "amount":
+				return ec.fieldContext_Payment_amount(ctx, field)
+			case "orderNo":
+				return ec.fieldContext_Payment_orderNo(ctx, field)
+			case "customerId":
+				return ec.fieldContext_Payment_customerId(ctx, field)
+			case "bankCode":
+				return ec.fieldContext_Payment_bankCode(ctx, field)
+			case "paymentDate":
+				return ec.fieldContext_Payment_paymentDate(ctx, field)
+			case "paymentStatus":
+				return ec.fieldContext_Payment_paymentStatus(ctx, field)
+			case "bankRefCode":
+				return ec.fieldContext_Payment_bankRefCode(ctx, field)
+			case "currentDate":
+				return ec.fieldContext_Payment_currentDate(ctx, field)
+			case "currentTime":
+				return ec.fieldContext_Payment_currentTime(ctx, field)
+			case "paymentDescription":
+				return ec.fieldContext_Payment_paymentDescription(ctx, field)
+			case "creditCardToken":
+				return ec.fieldContext_Payment_creditCardToken(ctx, field)
+			case "currency":
+				return ec.fieldContext_Payment_currency(ctx, field)
+			case "customerName":
+				return ec.fieldContext_Payment_customerName(ctx, field)
+			case "checkSum":
+				return ec.fieldContext_Payment_checkSum(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Payment", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_payment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PaginationType_page(ctx context.Context, field graphql.CollectedField, obj *modelgraph.PaginationType) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PaginationType_page(ctx, field)
 	if err != nil {
@@ -3384,6 +3669,621 @@ func (ec *executionContext) fieldContext_Payment_id(ctx context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _Payment_transactionId(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_transactionId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TransactionID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_transactionId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_amount(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_amount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Amount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_amount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_orderNo(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_orderNo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OrderNo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_orderNo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_customerId(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_customerId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomerID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_customerId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_bankCode(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_bankCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BankCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_bankCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_paymentDate(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_paymentDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PaymentDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_paymentDate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_paymentStatus(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_paymentStatus(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PaymentStatus, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_paymentStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_bankRefCode(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_bankRefCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BankRefCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_bankRefCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_currentDate(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_currentDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CurrentDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_currentDate(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_currentTime(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_currentTime(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CurrentTime, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_currentTime(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_paymentDescription(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_paymentDescription(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PaymentDescription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_paymentDescription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_creditCardToken(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_creditCardToken(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreditCardToken, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_creditCardToken(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_currency(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_currency(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Currency, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_currency(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_customerName(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_customerName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomerName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_customerName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Payment_checkSum(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Payment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Payment_checkSum(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CheckSum, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Payment_checkSum(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Payment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_getBooking(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_getBooking(ctx, field)
 	if err != nil {
@@ -3427,8 +4327,6 @@ func (ec *executionContext) fieldContext_Query_getBooking(ctx context.Context, f
 				return ec.fieldContext_Booking_id(ctx, field)
 			case "reference":
 				return ec.fieldContext_Booking_reference(ctx, field)
-			case "clientReference":
-				return ec.fieldContext_Booking_clientReference(ctx, field)
 			case "timeStart":
 				return ec.fieldContext_Booking_timeStart(ctx, field)
 			case "timeEnd":
@@ -3447,8 +4345,6 @@ func (ec *executionContext) fieldContext_Query_getBooking(ctx context.Context, f
 				return ec.fieldContext_Booking_caddy(ctx, field)
 			case "totalNet":
 				return ec.fieldContext_Booking_totalNet(ctx, field)
-			case "pendingAmount":
-				return ec.fieldContext_Booking_pendingAmount(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Booking", field.Name)
 		},
@@ -3680,7 +4576,7 @@ func (ec *executionContext) _Query_getCourseGolf(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetCourseGolf(rctx, fc.Args["input"].(modelgraph.GetgetCourseGolfInput))
+		return ec.resolvers.Query().GetCourseGolf(rctx, fc.Args["input"].(modelgraph.GetCourseGolfInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3753,7 +4649,7 @@ func (ec *executionContext) _Query_getCourseGolfs(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetCourseGolfs(rctx, fc.Args["input"].(modelgraph.GetgetCourseGolfsInput))
+		return ec.resolvers.Query().GetCourseGolfs(rctx, fc.Args["input"].(modelgraph.GetCourseGolfsInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3794,6 +4690,160 @@ func (ec *executionContext) fieldContext_Query_getCourseGolfs(ctx context.Contex
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_getCourseGolfs_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getCustomer(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getCustomer(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetCustomer(rctx, fc.Args["input"].(modelgraph.GetCustomerInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*modelgraph.Customer)
+	fc.Result = res
+	return ec.marshalNCustomer2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCustomer(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getCustomer(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Customer_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_Customer_userID(ctx, field)
+			case "name":
+				return ec.fieldContext_Customer_name(ctx, field)
+			case "images":
+				return ec.fieldContext_Customer_images(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Customer", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getCustomer_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getPayment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getPayment(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetPayment(rctx, fc.Args["input"].(modelgraph.GetPaymentInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*modelgraph.Payment)
+	fc.Result = res
+	return ec.marshalNPayment2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPayment(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getPayment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Payment_id(ctx, field)
+			case "transactionId":
+				return ec.fieldContext_Payment_transactionId(ctx, field)
+			case "amount":
+				return ec.fieldContext_Payment_amount(ctx, field)
+			case "orderNo":
+				return ec.fieldContext_Payment_orderNo(ctx, field)
+			case "customerId":
+				return ec.fieldContext_Payment_customerId(ctx, field)
+			case "bankCode":
+				return ec.fieldContext_Payment_bankCode(ctx, field)
+			case "paymentDate":
+				return ec.fieldContext_Payment_paymentDate(ctx, field)
+			case "paymentStatus":
+				return ec.fieldContext_Payment_paymentStatus(ctx, field)
+			case "bankRefCode":
+				return ec.fieldContext_Payment_bankRefCode(ctx, field)
+			case "currentDate":
+				return ec.fieldContext_Payment_currentDate(ctx, field)
+			case "currentTime":
+				return ec.fieldContext_Payment_currentTime(ctx, field)
+			case "paymentDescription":
+				return ec.fieldContext_Payment_paymentDescription(ctx, field)
+			case "creditCardToken":
+				return ec.fieldContext_Payment_creditCardToken(ctx, field)
+			case "currency":
+				return ec.fieldContext_Payment_currency(ctx, field)
+			case "customerName":
+				return ec.fieldContext_Payment_customerName(ctx, field)
+			case "checkSum":
+				return ec.fieldContext_Payment_checkSum(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Payment", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getPayment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -5801,7 +6851,7 @@ func (ec *executionContext) unmarshalInputBookingsInput(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"language", "pagination"}
+	fieldsInOrder := [...]string{"language", "pagination", "status"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5826,6 +6876,15 @@ func (ec *executionContext) unmarshalInputBookingsInput(ctx context.Context, obj
 				return it, err
 			}
 			it.Pagination = data
+		case "status":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Status = data
 		}
 	}
 
@@ -6052,6 +7111,62 @@ func (ec *executionContext) unmarshalInputCourseGolfInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCustomerInput(ctx context.Context, obj interface{}) (modelgraph.CustomerInput, error) {
+	var it modelgraph.CustomerInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "userID", "name", "images"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "userID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserID = data
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "images":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("images"))
+			data, err := ec.unmarshalOString2ᚕᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Images = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputGetBookingInput(ctx context.Context, obj interface{}) (modelgraph.GetBookingInput, error) {
 	var it modelgraph.GetBookingInput
 	asMap := map[string]interface{}{}
@@ -6166,8 +7281,8 @@ func (ec *executionContext) unmarshalInputGetCaddysInput(ctx context.Context, ob
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputGetgetCourseGolfInput(ctx context.Context, obj interface{}) (modelgraph.GetgetCourseGolfInput, error) {
-	var it modelgraph.GetgetCourseGolfInput
+func (ec *executionContext) unmarshalInputGetCourseGolfInput(ctx context.Context, obj interface{}) (modelgraph.GetCourseGolfInput, error) {
+	var it modelgraph.GetCourseGolfInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6204,8 +7319,8 @@ func (ec *executionContext) unmarshalInputGetgetCourseGolfInput(ctx context.Cont
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputGetgetCourseGolfsInput(ctx context.Context, obj interface{}) (modelgraph.GetgetCourseGolfsInput, error) {
-	var it modelgraph.GetgetCourseGolfsInput
+func (ec *executionContext) unmarshalInputGetCourseGolfsInput(ctx context.Context, obj interface{}) (modelgraph.GetCourseGolfsInput, error) {
+	var it modelgraph.GetCourseGolfsInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6236,6 +7351,82 @@ func (ec *executionContext) unmarshalInputGetgetCourseGolfsInput(ctx context.Con
 				return it, err
 			}
 			it.Pagination = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputGetCustomerInput(ctx context.Context, obj interface{}) (modelgraph.GetCustomerInput, error) {
+	var it modelgraph.GetCustomerInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"language", "id"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "language":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("language"))
+			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Language = data
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputGetPaymentInput(ctx context.Context, obj interface{}) (modelgraph.GetPaymentInput, error) {
+	var it modelgraph.GetPaymentInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"language", "id"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "language":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("language"))
+			data, err := ec.unmarshalNLanguageEnum2cadigoᚑapiᚋgraphᚋmodelgraphᚐLanguageEnum(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Language = data
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
 		}
 	}
 
@@ -6316,6 +7507,170 @@ func (ec *executionContext) unmarshalInputPaginationInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPaymentInput(ctx context.Context, obj interface{}) (modelgraph.PaymentInput, error) {
+	var it modelgraph.PaymentInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "transactionId", "amount", "orderNo", "customerId", "bankCode", "paymentDate", "paymentStatus", "bankRefCode", "currentDate", "currentTime", "paymentDescription", "creditCardToken", "currency", "customerName", "checkSum"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "transactionId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionId"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TransactionID = data
+		case "amount":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("amount"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Amount = data
+		case "orderNo":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderNo"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OrderNo = data
+		case "customerId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customerId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CustomerID = data
+		case "bankCode":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bankCode"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BankCode = data
+		case "paymentDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paymentDate"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PaymentDate = data
+		case "paymentStatus":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paymentStatus"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PaymentStatus = data
+		case "bankRefCode":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bankRefCode"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BankRefCode = data
+		case "currentDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currentDate"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrentDate = data
+		case "currentTime":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currentTime"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrentTime = data
+		case "paymentDescription":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("paymentDescription"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PaymentDescription = data
+		case "creditCardToken":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("creditCardToken"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CreditCardToken = data
+		case "currency":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currency"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Currency = data
+		case "customerName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customerName"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CustomerName = data
+		case "checkSum":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("checkSum"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CheckSum = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -6344,13 +7699,6 @@ func (ec *executionContext) _Booking(ctx context.Context, sel ast.SelectionSet, 
 		case "reference":
 
 			out.Values[i] = ec._Booking_reference(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "clientReference":
-
-			out.Values[i] = ec._Booking_clientReference(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
@@ -6444,10 +7792,6 @@ func (ec *executionContext) _Booking(ctx context.Context, sel ast.SelectionSet, 
 		case "totalNet":
 
 			out.Values[i] = ec._Booking_totalNet(ctx, field, obj)
-
-		case "pendingAmount":
-
-			out.Values[i] = ec._Booking_pendingAmount(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -6801,6 +8145,24 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "customer":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_customer(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "payment":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_payment(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6867,6 +8229,66 @@ func (ec *executionContext) _Payment(ctx context.Context, sel ast.SelectionSet, 
 		case "id":
 
 			out.Values[i] = ec._Payment_id(ctx, field, obj)
+
+		case "transactionId":
+
+			out.Values[i] = ec._Payment_transactionId(ctx, field, obj)
+
+		case "amount":
+
+			out.Values[i] = ec._Payment_amount(ctx, field, obj)
+
+		case "orderNo":
+
+			out.Values[i] = ec._Payment_orderNo(ctx, field, obj)
+
+		case "customerId":
+
+			out.Values[i] = ec._Payment_customerId(ctx, field, obj)
+
+		case "bankCode":
+
+			out.Values[i] = ec._Payment_bankCode(ctx, field, obj)
+
+		case "paymentDate":
+
+			out.Values[i] = ec._Payment_paymentDate(ctx, field, obj)
+
+		case "paymentStatus":
+
+			out.Values[i] = ec._Payment_paymentStatus(ctx, field, obj)
+
+		case "bankRefCode":
+
+			out.Values[i] = ec._Payment_bankRefCode(ctx, field, obj)
+
+		case "currentDate":
+
+			out.Values[i] = ec._Payment_currentDate(ctx, field, obj)
+
+		case "currentTime":
+
+			out.Values[i] = ec._Payment_currentTime(ctx, field, obj)
+
+		case "paymentDescription":
+
+			out.Values[i] = ec._Payment_paymentDescription(ctx, field, obj)
+
+		case "creditCardToken":
+
+			out.Values[i] = ec._Payment_creditCardToken(ctx, field, obj)
+
+		case "currency":
+
+			out.Values[i] = ec._Payment_currency(ctx, field, obj)
+
+		case "customerName":
+
+			out.Values[i] = ec._Payment_customerName(ctx, field, obj)
+
+		case "checkSum":
+
+			out.Values[i] = ec._Payment_checkSum(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -7023,6 +8445,52 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getCourseGolfs(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "getCustomer":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getCustomer(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "getPayment":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getPayment(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -7628,6 +9096,25 @@ func (ec *executionContext) unmarshalNCourseGolfInput2cadigoᚑapiᚋgraphᚋmod
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNCustomer2cadigoᚑapiᚋgraphᚋmodelgraphᚐCustomer(ctx context.Context, sel ast.SelectionSet, v modelgraph.Customer) graphql.Marshaler {
+	return ec._Customer(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCustomer2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCustomer(ctx context.Context, sel ast.SelectionSet, v *modelgraph.Customer) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Customer(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNCustomerInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐCustomerInput(ctx context.Context, v interface{}) (modelgraph.CustomerInput, error) {
+	res, err := ec.unmarshalInputCustomerInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {
 	res, err := graphql.UnmarshalFloat(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7658,13 +9145,23 @@ func (ec *executionContext) unmarshalNGetCaddysInput2cadigoᚑapiᚋgraphᚋmode
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNGetgetCourseGolfInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetgetCourseGolfInput(ctx context.Context, v interface{}) (modelgraph.GetgetCourseGolfInput, error) {
-	res, err := ec.unmarshalInputGetgetCourseGolfInput(ctx, v)
+func (ec *executionContext) unmarshalNGetCourseGolfInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCourseGolfInput(ctx context.Context, v interface{}) (modelgraph.GetCourseGolfInput, error) {
+	res, err := ec.unmarshalInputGetCourseGolfInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNGetgetCourseGolfsInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetgetCourseGolfsInput(ctx context.Context, v interface{}) (modelgraph.GetgetCourseGolfsInput, error) {
-	res, err := ec.unmarshalInputGetgetCourseGolfsInput(ctx, v)
+func (ec *executionContext) unmarshalNGetCourseGolfsInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCourseGolfsInput(ctx context.Context, v interface{}) (modelgraph.GetCourseGolfsInput, error) {
+	res, err := ec.unmarshalInputGetCourseGolfsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNGetCustomerInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetCustomerInput(ctx context.Context, v interface{}) (modelgraph.GetCustomerInput, error) {
+	res, err := ec.unmarshalInputGetCustomerInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNGetPaymentInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetPaymentInput(ctx context.Context, v interface{}) (modelgraph.GetPaymentInput, error) {
+	res, err := ec.unmarshalInputGetPaymentInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -7706,6 +9203,25 @@ func (ec *executionContext) marshalNPaginationType2ᚖcadigoᚑapiᚋgraphᚋmod
 		return graphql.Null
 	}
 	return ec._PaginationType(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPayment2cadigoᚑapiᚋgraphᚋmodelgraphᚐPayment(ctx context.Context, sel ast.SelectionSet, v modelgraph.Payment) graphql.Marshaler {
+	return ec._Payment(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNPayment2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPayment(ctx context.Context, sel ast.SelectionSet, v *modelgraph.Payment) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Payment(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNPaymentInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐPaymentInput(ctx context.Context, v interface{}) (modelgraph.PaymentInput, error) {
+	res, err := ec.unmarshalInputPaymentInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

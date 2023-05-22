@@ -27,3 +27,7 @@ func (serv *Service) GetAll(ctx context.Context, pagination modela.Pagination) (
 func (serv *Service) Update(ctx context.Context, argID string, record *modela.Caddy) (*modela.Caddy, error) {
 	return serv.repo.Update(ctx, argID, record)
 }
+
+func (serv *Service) GetByID(ctx context.Context, id string) (result *modela.Caddy, err error) {
+	return serv.repo.GetByID(ctx, id)
+}

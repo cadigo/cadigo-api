@@ -20,9 +20,17 @@ var generalConfig config.Config
 
 func graphqlHandler() gin.HandlerFunc {
 	caddyHandler := caddyHandlerInit()
+	bookinghandler := bookingHandlerInit()
+	coursegolfhandler := courseGolfHandlerInit()
+	customerhandler := customerHandlerInit()
+	paymenthandler := paymentHandlerInit()
 
 	h := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-		CaddyHandler: caddyHandler,
+		CaddyHandler:      caddyHandler,
+		BookingHandler:    bookinghandler,
+		CoursegolfHandler: coursegolfhandler,
+		CustomerHandler:   customerhandler,
+		PaymentHandler:    paymenthandler,
 	}}))
 
 	return func(c *gin.Context) {

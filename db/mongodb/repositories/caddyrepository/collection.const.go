@@ -1,5 +1,5 @@
 package caddyrepository
 
 const (
-	_caddyeCollection = "caddy"
+	_caddyCollection = "caddy"
 )

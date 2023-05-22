@@ -7,25 +7,24 @@ package graph
 import (
 	"cadigo-api/graph/modelgraph"
 	"context"
-	"fmt"
 )
 
 // CourseGolf is the resolver for the courseGolf field.
 func (r *mutationResolver) CourseGolf(ctx context.Context, input modelgraph.CourseGolfInput) (*modelgraph.CourseGolf, error) {
-	panic(fmt.Errorf("not implemented: CourseGolf - courseGolf"))
+	return r.CoursegolfHandler.CourseGolf(ctx, input)
 }
 
 // DeleteCourseGolf is the resolver for the deleteCourseGolf field.
 func (r *mutationResolver) DeleteCourseGolf(ctx context.Context, id string) (*modelgraph.CourseGolf, error) {
-	panic(fmt.Errorf("not implemented: DeleteCourseGolf - deleteCourseGolf"))
+	return r.CoursegolfHandler.DeleteCourseGolf(ctx, id)
 }
 
 // GetCourseGolf is the resolver for the getCourseGolf field.
-func (r *queryResolver) GetCourseGolf(ctx context.Context, input modelgraph.GetgetCourseGolfInput) (*modelgraph.CourseGolf, error) {
-	panic(fmt.Errorf("not implemented: GetCourseGolf - getCourseGolf"))
+func (r *queryResolver) GetCourseGolf(ctx context.Context, input modelgraph.GetCourseGolfInput) (*modelgraph.CourseGolf, error) {
+	return r.CoursegolfHandler.GetCourseGolf(ctx, input)
 }
 
 // GetCourseGolfs is the resolver for the getCourseGolfs field.
-func (r *queryResolver) GetCourseGolfs(ctx context.Context, input modelgraph.GetgetCourseGolfsInput) (*modelgraph.CourseGolfData, error) {
-	panic(fmt.Errorf("not implemented: GetCourseGolfs - getCourseGolfs"))
+func (r *queryResolver) GetCourseGolfs(ctx context.Context, input modelgraph.GetCourseGolfsInput) (*modelgraph.CourseGolfData, error) {
+	return r.CoursegolfHandler.GetCourseGolfs(ctx, input)
 }

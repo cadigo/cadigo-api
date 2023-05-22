@@ -5,7 +5,6 @@ import (
 	"cadigo-api/app/modela"
 	"cadigo-api/graph/modelgraph"
 	"context"
-	"fmt"
 
 	"github.com/jinzhu/copier"
 )
@@ -51,7 +50,18 @@ func (r *Handler) Caddy(ctx context.Context, input modelgraph.CaddyInput) (*mode
 
 // GetCaddy is the resolver for the getCaddy field.
 func (r *Handler) GetCaddy(ctx context.Context, input modelgraph.GetCaddyInput) (*modelgraph.Caddy, error) {
-	panic(fmt.Errorf("not implemented: GetCaddy - getCaddy"))
+	if input.ID != nil {
+		d, err := r.servCaddy.GetByID(ctx, *input.ID)
+		if err != nil {
+			return nil, nil
+		}
+
+		g := d.ToGraph()
+
+		return &g, nil
+	}
+
+	return nil, nil
 }
 
 // GetCaddys is the resolver for the getCaddys field.

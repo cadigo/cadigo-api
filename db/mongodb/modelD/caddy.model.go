@@ -17,6 +17,7 @@ type Caddy struct {
 	Description   string   `bson:"description,omitempty" copier:"Description"`
 	Time          []string `bson:"time,omitempty" copier:"Time"`
 	Tags          []string `bson:"tags,omitempty" copier:"Tags"`
+	Images        []string `bson:"images,omitempty" copier:"Images"`
 	Cost          float64  `bson:"cost" copier:"Cost"`
 }
 

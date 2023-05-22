@@ -15,14 +15,14 @@ type CourseGolf {
 }
 
 # GraphQl schema Input
-# GetgetCourseGolfInput
-input GetgetCourseGolfInput {
+# GetCourseGolfInput
+input GetCourseGolfInput {
   language: LanguageEnum!
   id: String
 }
 
-# GetgetCourseGolfsInput
-input GetgetCourseGolfsInput {
+# GetCourseGolfsInput
+input GetCourseGolfsInput {
   language: LanguageEnum!
   pagination: PaginationInput!
 }
@@ -41,8 +41,8 @@ input CourseGolfInput {
 
 # Query
 extend type Query {
-  getCourseGolf(input: GetgetCourseGolfInput!): CourseGolf!
-  getCourseGolfs(input: GetgetCourseGolfsInput!): CourseGolfData!
+  getCourseGolf(input: GetCourseGolfInput!): CourseGolf!
+  getCourseGolfs(input: GetCourseGolfsInput!): CourseGolfData!
 }
 
 # Mutation
