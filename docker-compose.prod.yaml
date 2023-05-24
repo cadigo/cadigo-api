@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   app:
-    container_name: oas-platform-hotels-master-propd-api
+    container_name: cadigo-api-dev
     build:
       context: .
       dockerfile: ./build/Dockerfile
@@ -13,4 +13,4 @@ services:
     env_file:
       - .env
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "8080:8080"

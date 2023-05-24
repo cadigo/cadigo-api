@@ -13,13 +13,13 @@ run-dev:
 	-air
 
 set-mod:
-	go env -w GOPRIVATE=github.com/oasis-prime/oas-platform-core,github.com/oasis-prime/oas-platform-firebase-core
-	git config --global url."https://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:x-oauth-basic@github.com".insteadOf "https://github.com"
+	go env -w GOPRIVATE=github.com/,github.com/oasis-prime/
+	git config --global url."https://:x-oauth-basic@github.com".insteadOf "https://github.com"
 
 dcup-build:
 	docker build \
 		--build-arg ACCESS_TOKEN= \
-		-t oas-platform-hotels-master-api -f ./build/Dockerfile .
+		-t cadigo-api -f ./build/Dockerfile .
 
 dcup-local:
 	docker-compose up
