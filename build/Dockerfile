@@ -24,7 +24,10 @@ RUN go mod download
 
 COPY . .
 
+# RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o goapp ./cmd/api/main.go
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o goapp ./cmd/api/main.go
+
+RUN strip goapp
 
 ##########################################
 

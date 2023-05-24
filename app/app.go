@@ -48,12 +48,9 @@ func playgroundHandler() gin.HandlerFunc {
 }
 
 func loadConfig() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("unable to load .env file: %e", err)
-	}
+	godotenv.Load()
 
-	err = env.Parse(&generalConfig)
+	err := env.Parse(&generalConfig)
 	if err != nil {
 		log.Fatalf("unable to parse ennvironment variables: %e", err)
 	}
