@@ -1,5 +1,5 @@
 # Please keep up to date with the new-version of Golang docker for builder
-FROM golang:1.19-alpine
+FROM golang:1.20-alpine
 
 RUN apk update && apk upgrade && \
     apk add git && \
@@ -14,7 +14,7 @@ ARG ACCESS_TOKEN
 ENV ACCESS_TOKEN=$ACCESS_TOKEN
 ENV TZ=Asia/Bangkok
 
-RUN git config --global url."https://${ACCESS_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+# RUN git config --global url."https://${ACCESS_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 # RUN git config --global url."https://${ACCESS_TOKEN}@github.com".insteadOf "https://github.com"
 
 ENTRYPOINT ["/go/bin/air"]

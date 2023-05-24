@@ -1,0 +1,79 @@
+name: Build and Deploy to Cloud Run
+
+on:
+  pull_request:
+    branches: ["main"]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT }}
+  SERVICE: ${{ secrets.GCP_SERVICE }}
+  REGION: asia-southeast1
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v0"
+        with:
+          service_account: "github-service-account@cadigo-dev.iam.gserviceaccount.com"
+          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          file: ./build/Dockerfile
+          push: true
+          tags: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
+          build-args: |-
+            ENVIRONMENT=${{ secrets.ENVIRONMENT }}
+            VERSION=${{ github.sha }}
+            MONGODB_DB_NAME=${{ secrets.MONGODB_DB_NAME }}
+            MONGODB_HOSTS=${{ secrets.MONGODB_HOSTS }}
+            MONGODB_TIMEOUT=${{ secrets.MONGODB_TIMEOUT }}
+            MONGODB_DIAL_TIMEOUT=${{ secrets.MONGODB_DIAL_TIMEOUT }}
+            MONGODB_POOL_SIZE=${{ secrets.MONGODB_POOL_SIZE }}
+            MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}
+            MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
+            MONGODB_REPLICA_SET=${{ secrets.MONGODB_REPLICA_SET }}
+            MONGODB_AUTH_SOURCE=${{ secrets.MONGODB_AUTH_SOURCE }}
+            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            CUSTOM_ID_PREFIX=${{ secrets.CUSTOM_ID_PREFIX }}
+
+      - name: "Deploy to Cloud Run"
+        uses: "google-github-actions/deploy-cloudrun@v0"
+        with:
+          service: ${{ env.SERVICE }}
+          region: ${{ env.REGION }}
+          image: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
+          flags: --cpu=1 --memory=1Gi --port=8080 --allow-unauthenticated
+          env_vars: |
+            ENVIRONMENT=${{ secrets.ENVIRONMENT }}
+            VERSION=${{ github.sha }}
+            MONGODB_DB_NAME=${{ secrets.MONGODB_DB_NAME }}
+            MONGODB_HOSTS=${{ secrets.MONGODB_HOSTS }}
+            MONGODB_TIMEOUT=${{ secrets.MONGODB_TIMEOUT }}
+            MONGODB_DIAL_TIMEOUT=${{ secrets.MONGODB_DIAL_TIMEOUT }}
+            MONGODB_POOL_SIZE=${{ secrets.MONGODB_POOL_SIZE }}
+            MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}
+            MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
+            MONGODB_REPLICA_SET=${{ secrets.MONGODB_REPLICA_SET }}
+            MONGODB_AUTH_SOURCE=${{ secrets.MONGODB_AUTH_SOURCE }}
+            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            CUSTOM_ID_PREFIX=${{ secrets.CUSTOM_ID_PREFIX }}
