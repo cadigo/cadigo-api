@@ -14,7 +14,7 @@ extend type Query {
   users: [String!]!
 }
 
-extend type Subscription {
+type Subscription {
   messagePosted(user: String!): Message!
   userJoined(user: String!): String!
 }

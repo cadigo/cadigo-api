@@ -4,14 +4,17 @@ import (
 	"cadigo-api/config"
 	"cadigo-api/db/mongodb/infrastructure"
 	"cadigo-api/graph"
+	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/caarlos0/env/v8"
-	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 )
@@ -21,7 +24,7 @@ const defaultPort = "8080"
 var mongodbConnector infrastructure.MongodbConnector
 var generalConfig config.Config
 
-func graphqlHandler() http.HandlerFunc {
+func graphqlHandler() *handler.Server {
 	caddyHandler := caddyHandlerInit()
 	bookinghandler := bookingHandlerInit()
 	coursegolfhandler := courseGolfHandlerInit()
@@ -29,7 +32,7 @@ func graphqlHandler() http.HandlerFunc {
 	paymenthandler := paymentHandlerInit()
 	chatHandler := chatHandlerInit()
 
-	h := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+	h := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		CaddyHandler:      caddyHandler,
 		BookingHandler:    bookinghandler,
 		CoursegolfHandler: coursegolfhandler,
@@ -38,9 +41,7 @@ func graphqlHandler() http.HandlerFunc {
 		ChatHandler:       chatHandler,
 	}}))
 
-	h.AddTransport(&transport.Websocket{})
-
-	return h.ServeHTTP
+	return h
 }
 
 func playgroundHandler(endpoint string) http.HandlerFunc {
@@ -58,20 +59,53 @@ func loadConfig() {
 	}
 }
 
+func webSocketInit(ctx context.Context, initPayload transport.InitPayload) (context.Context, error) {
+	// Get the token from payload
+	// any := initPayload["authToken"]
+	// token, ok := any.(string)
+	// if !ok || token == "" {
+	// 	return nil, errors.New("authToken not found in transport payload")
+	// }
+
+	// // Perform token verification and authentication...
+	userId := "john.doe" // e.g. userId, err := GetUserFromAuthentication(token)
+
+	// put it in context
+	ctxNew := context.WithValue(ctx, "username", userId)
+
+	return ctxNew, nil
+}
+
 func NewApp() error {
 	loadConfig()
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "HEAD", "POST", "PUT", "OPTIONS"},
 		ExposedHeaders:   []string{"Origin"},
+		AllowedHeaders:   []string{"Origin", "Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "X-Requested-With"},
+		Debug:            false,
 	})
 
-	r := mux.NewRouter()
+	// r := mux.NewRouter()
 
-	r.Handle("/", playgroundHandler("/graphql"))
-	r.Handle("/graphql", c.Handler(graphqlHandler()))
+	// r.Handle("/", playgroundHandler("/graphql"))
+	// r.Handle("/graphql", c.Handler(graphqlHandler()))
 
-	http.Handle("/", r)
+	http.Handle("/", playgroundHandler("/graphql"))
+
+	srv := graphqlHandler()
+	srv.AddTransport(transport.POST{})
+	srv.AddTransport(transport.Websocket{
+		KeepAlivePingInterval: 10 * time.Second,
+		Upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
+	})
+	srv.Use(extension.Introspection{})
+	http.Handle("/graphql", c.Handler(srv))
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", "8080")
 
