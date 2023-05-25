@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  app:
+    container_name: cadigo-api-dev
+    build:
+      context: .
+      dockerfile: ./build/Dockerfile
+      args:
+        ACCESS_TOKEN:
+    volumes:
+      - ./:/app/
+    working_dir: /app
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"

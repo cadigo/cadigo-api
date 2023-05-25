@@ -1,0 +1,29 @@
+type Customer {
+  id: String
+  userID: String
+  name: String
+  images: [String]
+}
+
+# CourseGolfInput
+input GetCustomerInput {
+  language: LanguageEnum!
+  id: String
+}
+
+input CustomerInput {
+  id: String
+  userID: String!
+  name: String!
+  images: [String]
+}
+
+# Query
+extend type Query {
+  getCustomer(input: GetCustomerInput!): Customer!
+}
+
+# Mutation
+extend type Mutation {
+  customer(input: CustomerInput!): Customer!
+}

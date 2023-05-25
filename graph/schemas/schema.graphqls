@@ -1,0 +1,28 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+scalar Upload
+scalar Time
+
+# GraphQL schema-enum
+enum LanguageEnum {
+  TH
+  EN
+}
+
+# GrapgQL schema-type
+type PaginationType {
+  page: Int!
+  limit: Int!
+  total: Int!
+}
+
+# GrapgQL schema-input
+input PaginationInput {
+  page: Int!
+  limit: Int!
+  orderBy: String
+  asc: Boolean
+  leyword: [String]
+  language: LanguageEnum
+}

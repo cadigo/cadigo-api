@@ -1,0 +1,61 @@
+# GraphQL Basic enum
+
+# GraphQL schema Type
+# Booking
+type BookingData {
+  data: [Booking!]!
+  pagination: PaginationType!
+}
+
+type Booking {
+  id: String!
+  reference: String!
+  timeStart: Time!
+  timeEnd: Time!
+  customerID: String!
+  customer: Customer
+  courseGolfID: String!
+  courseGolf: CourseGolf
+  caddyID: String!
+  caddy: Caddy
+  totalNet: Float
+}
+
+# GraphQl schema Input
+# GetBookingInput
+input GetBookingInput {
+  bookingReference: String
+  language: LanguageEnum!
+}
+
+# GraphQl schema Input
+# BookingsInput
+input BookingsInput {
+  language: LanguageEnum!
+  pagination: PaginationInput!
+  status: String
+}
+
+# GraphQl schema Input
+# BookingInput
+input BookingInput {
+  reference: String!
+  timeStart: Time!
+  timeEnd: Time!
+  customerID: String!
+  courseGolfID: String!
+  caddyID: String!
+  remark: String
+  language: LanguageEnum!
+}
+
+# Query
+extend type Query {
+  getBooking(input: GetBookingInput!): Booking!
+  getBookings(input: BookingsInput!): BookingData!
+}
+
+# Mutation
+extend type Mutation {
+  booking(input: BookingInput!): Booking!
+}
