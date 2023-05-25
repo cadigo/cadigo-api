@@ -5,12 +5,15 @@ import (
 	"cadigo-api/db/mongodb/infrastructure"
 	"cadigo-api/graph"
 	"log"
+	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/caarlos0/env/v8"
-	"github.com/gin-gonic/gin"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 const defaultPort = "8080"
@@ -18,12 +21,13 @@ const defaultPort = "8080"
 var mongodbConnector infrastructure.MongodbConnector
 var generalConfig config.Config
 
-func graphqlHandler() gin.HandlerFunc {
+func graphqlHandler() http.HandlerFunc {
 	caddyHandler := caddyHandlerInit()
 	bookinghandler := bookingHandlerInit()
 	coursegolfhandler := courseGolfHandlerInit()
 	customerhandler := customerHandlerInit()
 	paymenthandler := paymentHandlerInit()
+	chatHandler := chatHandlerInit()
 
 	h := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		CaddyHandler:      caddyHandler,
@@ -31,20 +35,18 @@ func graphqlHandler() gin.HandlerFunc {
 		CoursegolfHandler: coursegolfhandler,
 		CustomerHandler:   customerhandler,
 		PaymentHandler:    paymenthandler,
+		ChatHandler:       chatHandler,
 	}}))
 
-	return func(c *gin.Context) {
-		h.ServeHTTP(c.Writer, c.Request)
-	}
+	h.AddTransport(&transport.Websocket{})
+
+	return h.ServeHTTP
 }
 
-func playgroundHandler() gin.HandlerFunc {
+func playgroundHandler(endpoint string) http.HandlerFunc {
+	h := playground.Handler("GraphQL", endpoint)
 
-	h := playground.Handler("GraphQL", "/graphql")
-
-	return func(c *gin.Context) {
-		h.ServeHTTP(c.Writer, c.Request)
-	}
+	return h.ServeHTTP
 }
 
 func loadConfig() {
@@ -56,31 +58,24 @@ func loadConfig() {
 	}
 }
 
-func corsMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization,X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Expose-Headers", "Origin")
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(200)
-		} else {
-			c.Next()
-		}
-	}
-}
-
 func NewApp() error {
 	loadConfig()
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		ExposedHeaders:   []string{"Origin"},
+	})
 
-	r := gin.Default()
+	r := mux.NewRouter()
 
-	r.Use(corsMiddleware())
-	r.POST("/graphql", graphqlHandler())
-	r.GET("/graphql", playgroundHandler())
-	r.Run()
+	r.Handle("/", playgroundHandler("/graphql"))
+	r.Handle("/graphql", c.Handler(graphqlHandler()))
+
+	http.Handle("/", r)
+
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", "8080")
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
 
 	return nil
 }

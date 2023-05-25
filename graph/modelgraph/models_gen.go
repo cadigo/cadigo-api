@@ -154,6 +154,18 @@ type GetPaymentInput struct {
 	ID       *string      `json:"id,omitempty" copier:"Id"`
 }
 
+type GetUserInput struct {
+	BookingReference *string      `json:"bookingReference,omitempty" copier:"BookingReference"`
+	Language         LanguageEnum `json:"language" copier:"Language"`
+}
+
+type Message struct {
+	ID        string    `json:"id" copier:"Id"`
+	User      string    `json:"user" copier:"User"`
+	CreatedAt time.Time `json:"createdAt" copier:"CreatedAt"`
+	Text      string    `json:"text" copier:"Text"`
+}
+
 type PaginationInput struct {
 	Page     int           `json:"page" copier:"Page"`
 	Limit    int           `json:"limit" copier:"Limit"`
@@ -205,6 +217,15 @@ type PaymentInput struct {
 	Currency           string  `json:"currency" copier:"Currency"`
 	CustomerName       string  `json:"customerName" copier:"CustomerName"`
 	CheckSum           string  `json:"checkSum" copier:"CheckSum"`
+}
+
+type User struct {
+	ID        string `json:"id" copier:"Id"`
+	Reference string `json:"reference" copier:"Reference"`
+}
+
+type UserInput struct {
+	Reference string `json:"reference" copier:"Reference"`
 }
 
 type LanguageEnum string
