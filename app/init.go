@@ -3,6 +3,7 @@ package app
 import (
 	"cadigo-api/app/handlers/bookinghandler"
 	"cadigo-api/app/handlers/caddyhandler"
+	"cadigo-api/app/handlers/chathandler"
 	"cadigo-api/app/handlers/coursegolfhandler"
 	"cadigo-api/app/handlers/customerhandler"
 	"cadigo-api/app/handlers/paymenthandler"
@@ -87,4 +88,8 @@ func paymentHandlerInit() *paymenthandler.Handler {
 	paymentRepo := paymentrepository.NewRepository(baseMongoRepo)
 	paymentServ := paymentservice.NewService(paymentRepo)
 	return paymenthandler.NewHandler(paymentServ)
+}
+
+func chatHandlerInit() *chathandler.Handler {
+	return chathandler.NewHandler(generalConfig.RedisAddr, generalConfig.RedisPass)
 }

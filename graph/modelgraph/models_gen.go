@@ -78,6 +78,11 @@ type CaddyInput struct {
 	IsActive     bool         `json:"isActive" copier:"IsActive"`
 }
 
+type ChatInput struct {
+	RoomID        string `json:"roomId" copier:"RoomId"`
+	CurrentUserID string `json:"currentUserId" copier:"CurrentUserId"`
+}
+
 type CourseGolf struct {
 	ID        string   `json:"id" copier:"Id"`
 	Name      string   `json:"name" copier:"Name"`
@@ -149,9 +154,41 @@ type GetCustomerInput struct {
 	ID       *string      `json:"id,omitempty" copier:"Id"`
 }
 
+type GetMessagesInput struct {
+	ToUserID   string `json:"toUserId" copier:"ToUserId"`
+	FromUserID string `json:"fromUserId" copier:"FromUserId"`
+}
+
+type GetOnlineInput struct {
+	ToUserID []string `json:"toUserId" copier:"ToUserId"`
+}
+
 type GetPaymentInput struct {
 	Language LanguageEnum `json:"language" copier:"Language"`
 	ID       *string      `json:"id,omitempty" copier:"Id"`
+}
+
+type GetUserInput struct {
+	BookingReference *string      `json:"bookingReference,omitempty" copier:"BookingReference"`
+	Language         LanguageEnum `json:"language" copier:"Language"`
+}
+
+type Message struct {
+	ToUserID   string    `json:"toUserId" copier:"ToUserId"`
+	FromUserID string    `json:"fromUserId" copier:"FromUserId"`
+	Message    string    `json:"message" copier:"Message"`
+	CreatedAt  time.Time `json:"createdAt" copier:"CreatedAt"`
+	RoomID     string    `json:"roomId" copier:"RoomId"`
+}
+
+type Online struct {
+	UserID     string    `json:"userId" copier:"UserId"`
+	UserName   string    `json:"userName" copier:"UserName"`
+	LastOnline time.Time `json:"lastOnline" copier:"LastOnline"`
+}
+
+type OnlineInput struct {
+	CurrentUserID string `json:"currentUserId" copier:"CurrentUserId"`
 }
 
 type PaginationInput struct {
@@ -205,6 +242,22 @@ type PaymentInput struct {
 	Currency           string  `json:"currency" copier:"Currency"`
 	CustomerName       string  `json:"customerName" copier:"CustomerName"`
 	CheckSum           string  `json:"checkSum" copier:"CheckSum"`
+}
+
+type PostMessageInput struct {
+	ToUserID   string  `json:"toUserId" copier:"ToUserId"`
+	FromUserID string  `json:"fromUserId" copier:"FromUserId"`
+	Message    string  `json:"message" copier:"Message"`
+	RoomID     *string `json:"roomId,omitempty" copier:"RoomId"`
+}
+
+type User struct {
+	ID        string `json:"id" copier:"Id"`
+	Reference string `json:"reference" copier:"Reference"`
+}
+
+type UserInput struct {
+	Reference string `json:"reference" copier:"Reference"`
 }
 
 type LanguageEnum string

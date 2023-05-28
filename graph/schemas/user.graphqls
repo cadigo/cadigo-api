@@ -1,0 +1,27 @@
+type User {
+  id: String!
+  reference: String!
+}
+
+# GraphQl schema Input
+# GetUserInput
+input GetUserInput {
+  bookingReference: String
+  language: LanguageEnum!
+}
+
+# GraphQl schema Input
+# UserInput
+input UserInput {
+  reference: String!
+}
+
+# Query
+extend type Query {
+  getUser(input: GetUserInput!): User!
+}
+
+# Mutation
+extend type Mutation {
+  user(input: UserInput!): User!
+}

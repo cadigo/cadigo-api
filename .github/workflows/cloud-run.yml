@@ -41,20 +41,6 @@ jobs:
           file: ./build/Dockerfile
           push: true
           tags: gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{  github.sha }}
-          build-args: |-
-            ENVIRONMENT=${{ secrets.ENVIRONMENT }}
-            VERSION=${{ github.sha }}
-            MONGODB_DB_NAME=${{ secrets.MONGODB_DB_NAME }}
-            MONGODB_HOSTS=${{ secrets.MONGODB_HOSTS }}
-            MONGODB_TIMEOUT=${{ secrets.MONGODB_TIMEOUT }}
-            MONGODB_DIAL_TIMEOUT=${{ secrets.MONGODB_DIAL_TIMEOUT }}
-            MONGODB_POOL_SIZE=${{ secrets.MONGODB_POOL_SIZE }}
-            MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}
-            MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
-            MONGODB_REPLICA_SET=${{ secrets.MONGODB_REPLICA_SET }}
-            MONGODB_AUTH_SOURCE=${{ secrets.MONGODB_AUTH_SOURCE }}
-            MONGODB_URI=${{ secrets.MONGODB_URI }}
-            CUSTOM_ID_PREFIX=${{ secrets.CUSTOM_ID_PREFIX }}
 
       - name: "Deploy to Cloud Run"
         uses: "google-github-actions/deploy-cloudrun@v0"
@@ -77,3 +63,5 @@ jobs:
             MONGODB_AUTH_SOURCE=${{ secrets.MONGODB_AUTH_SOURCE }}
             MONGODB_URI=${{ secrets.MONGODB_URI }}
             CUSTOM_ID_PREFIX=${{ secrets.CUSTOM_ID_PREFIX }}
+            REDIS_ADDR=${{ secrets.REDIS_ADDR }}
+            REDIS_PASS=${{ secrets.REDIS_PASS }}
