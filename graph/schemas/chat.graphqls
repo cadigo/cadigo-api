@@ -1,20 +1,58 @@
+# GraphQl schema Input
+# ChatInput
+input ChatInput {
+  roomId: String!
+  currentUserId: String!
+}
+
+# PostMessageInput
+input PostMessageInput {
+  toUserId: String!
+  fromUserId: String!
+  message: String!
+  roomId: String
+}
+
+# OnlineInput
+input OnlineInput {
+  currentUserId: String!
+}
+
+# GetMessagesInput
+input GetMessagesInput {
+  toUserId: String!
+  fromUserId: String!
+}
+
+# GetOnlineInput
+input GetOnlineInput {
+  toUserId: [String!]!
+}
+
 type Message {
-  id: String!
-  user: String!
+  toUserId: String!
+  fromUserId: String!
+  message: String!
   createdAt: Time!
-  text: String!
+  roomId: String!
+}
+
+type Online {
+  userId: String!
+  userName: String!
+  lastOnline: Time!
 }
 
 extend type Mutation {
-  postMessage(user: String!, text: String!): Message
+  postMessage(inpuy: PostMessageInput): Message
 }
 
 extend type Query {
-  messages: [Message!]!
-  users: [String!]!
+  getMessages(input: GetMessagesInput!): [Message!]!
+  getOnline(input: GetOnlineInput!): [Online!]!
 }
 
 type Subscription {
-  messagePosted(user: String!): Message!
-  userJoined(user: String!): String!
+  chat(input: ChatInput!): Message!
+  online(input: OnlineInput!): String!
 }

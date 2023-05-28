@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
@@ -36,35 +37,61 @@ func NewHandler(redisAddr string, redisPass string) *Handler {
 	}
 }
 
-func (s *Handler) PostMessage(ctx context.Context, user string, text string) (*modelgraph.Message, error) {
-	err := s.createUser(user)
-	if err != nil {
-		return nil, err
+func (s *Handler) PostMessage(ctx context.Context, input *modelgraph.PostMessageInput) (*modelgraph.Message, error) {
+	var roomID string
+
+	if input.RoomID == nil {
+		room, err := s.getRoom(input.FromUserID, input.ToUserID)
+		if err != nil {
+			roomID = ksuid.New().String()
+			err := s.createRoom(input.FromUserID, input.ToUserID, roomID)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			roomID = *room
+		}
+
+	} else {
+		roomID = *input.RoomID
 	}
 
 	// Create message
 	m := &modelgraph.Message{
-		ID:        ksuid.New().String(),
-		CreatedAt: time.Now().UTC(),
-		Text:      text,
-		User:      user,
+		ToUserID:   input.ToUserID,
+		FromUserID: input.FromUserID,
+		CreatedAt:  time.Now().UTC(),
+		Message:    input.Message,
+		RoomID:     roomID,
 	}
 	mj, _ := json.Marshal(m)
-	if err := s.redisClient.LPush("messages", mj).Err(); err != nil {
+	if err := s.redisClient.LPush(m.RoomID, mj).Err(); err != nil {
 		log.Println(err)
 		return nil, err
 	}
 	// Notify new message
 	s.mutex.Lock()
-	for _, ch := range s.messageChannels {
-		ch <- m
+	for k, ch := range s.messageChannels {
+		res2 := strings.Split(k, ":")
+		if len(res2) == 2 {
+			if res2[1] == m.RoomID {
+				ch <- m
+			}
+		}
 	}
+
 	s.mutex.Unlock()
 	return m, nil
 }
 
-func (s *Handler) Messages(ctx context.Context) ([]*modelgraph.Message, error) {
-	cmd := s.redisClient.LRange("messages", 0, -1)
+func (s *Handler) GetMessages(ctx context.Context, input modelgraph.GetMessagesInput) ([]*modelgraph.Message, error) {
+	roomID, err := s.getRoom(input.FromUserID, input.ToUserID)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	cmd := s.redisClient.LRange(*roomID, 0, -1)
 	if cmd.Err() != nil {
 		log.Println(cmd.Err())
 		return nil, cmd.Err()
@@ -83,7 +110,7 @@ func (s *Handler) Messages(ctx context.Context) ([]*modelgraph.Message, error) {
 	return messages, nil
 }
 
-func (s *Handler) Users(ctx context.Context) ([]string, error) {
+func (s *Handler) GetOnline(ctx context.Context, input modelgraph.GetOnlineInput) ([]*modelgraph.Online, error) {
 	cmd := s.redisClient.SMembers("users")
 	if cmd.Err() != nil {
 		log.Println(cmd.Err())
@@ -94,11 +121,20 @@ func (s *Handler) Users(ctx context.Context) ([]string, error) {
 		log.Println(err)
 		return nil, err
 	}
-	return res, nil
+
+	d := []*modelgraph.Online{}
+
+	for _, u := range res {
+		d = append(d, &modelgraph.Online{
+			UserID: u,
+		})
+	}
+
+	return d, nil
 }
 
-func (s *Handler) MessagePosted(ctx context.Context, user string) (<-chan *modelgraph.Message, error) {
-	err := s.createUser(user)
+func (s *Handler) SubscriptionChat(ctx context.Context, input modelgraph.ChatInput) (<-chan *modelgraph.Message, error) {
+	err := s.createUser(input.CurrentUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -106,22 +142,22 @@ func (s *Handler) MessagePosted(ctx context.Context, user string) (<-chan *model
 	// Create new channel for request
 	messages := make(chan *modelgraph.Message, 1)
 	s.mutex.Lock()
-	s.messageChannels[user] = messages
+	s.messageChannels[input.CurrentUserID+":"+input.RoomID] = messages
 	s.mutex.Unlock()
 
 	// Delete channel when done
 	go func() {
 		<-ctx.Done()
 		s.mutex.Lock()
-		delete(s.messageChannels, user)
+		delete(s.messageChannels, input.CurrentUserID+":"+input.RoomID)
 		s.mutex.Unlock()
 	}()
 
 	return messages, nil
 }
 
-func (s *Handler) UserJoined(ctx context.Context, user string) (<-chan string, error) {
-	err := s.createUser(user)
+func (s *Handler) SubscriptionOnline(ctx context.Context, input modelgraph.OnlineInput) (<-chan string, error) {
+	err := s.createUser(input.CurrentUserID)
 	if err != nil {
 		return nil, err
 	}
@@ -129,14 +165,14 @@ func (s *Handler) UserJoined(ctx context.Context, user string) (<-chan string, e
 	// Create new channel for request
 	users := make(chan string, 1)
 	s.mutex.Lock()
-	s.userChannels[user] = users
+	s.userChannels[input.CurrentUserID] = users
 	s.mutex.Unlock()
 
-	// Delete channel when done
+	// // Delete channel when done
 	go func() {
 		<-ctx.Done()
 		s.mutex.Lock()
-		delete(s.userChannels, user)
+		delete(s.userChannels, input.CurrentUserID)
 		s.mutex.Unlock()
 	}()
 
@@ -155,4 +191,25 @@ func (s *Handler) createUser(user string) error {
 	}
 	s.mutex.Unlock()
 	return nil
+}
+
+func (s *Handler) createRoom(fromUserID string, toUserID string, roomID string) error {
+	if err := s.redisClient.Set(fromUserID+":"+toUserID, roomID, 0).Err(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Handler) getRoom(fromUserID string, toUserID string) (*string, error) {
+	val, err := s.redisClient.Get(fromUserID + ":" + toUserID).Result()
+
+	if err != nil {
+		val, err = s.redisClient.Get(toUserID + ":" + fromUserID).Result()
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &val, nil
 }

@@ -110,10 +110,11 @@ type ComplexityRoot struct {
 	}
 
 	Message struct {
-		CreatedAt func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Text      func(childComplexity int) int
-		User      func(childComplexity int) int
+		CreatedAt  func(childComplexity int) int
+		FromUserID func(childComplexity int) int
+		Message    func(childComplexity int) int
+		RoomID     func(childComplexity int) int
+		ToUserID   func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -124,8 +125,14 @@ type ComplexityRoot struct {
 		DeleteCaddy      func(childComplexity int, id string) int
 		DeleteCourseGolf func(childComplexity int, id string) int
 		Payment          func(childComplexity int, input modelgraph.PaymentInput) int
-		PostMessage      func(childComplexity int, user string, text string) int
+		PostMessage      func(childComplexity int, inpuy *modelgraph.PostMessageInput) int
 		User             func(childComplexity int, input modelgraph.UserInput) int
+	}
+
+	Online struct {
+		LastOnline func(childComplexity int) int
+		UserID     func(childComplexity int) int
+		UserName   func(childComplexity int) int
 	}
 
 	PaginationType struct {
@@ -161,15 +168,15 @@ type ComplexityRoot struct {
 		GetCourseGolf  func(childComplexity int, input modelgraph.GetCourseGolfInput) int
 		GetCourseGolfs func(childComplexity int, input modelgraph.GetCourseGolfsInput) int
 		GetCustomer    func(childComplexity int, input modelgraph.GetCustomerInput) int
+		GetMessages    func(childComplexity int, input modelgraph.GetMessagesInput) int
+		GetOnline      func(childComplexity int, input modelgraph.GetOnlineInput) int
 		GetPayment     func(childComplexity int, input modelgraph.GetPaymentInput) int
 		GetUser        func(childComplexity int, input modelgraph.GetUserInput) int
-		Messages       func(childComplexity int) int
-		Users          func(childComplexity int) int
 	}
 
 	Subscription struct {
-		MessagePosted func(childComplexity int, user string) int
-		UserJoined    func(childComplexity int, user string) int
+		Chat   func(childComplexity int, input modelgraph.ChatInput) int
+		Online func(childComplexity int, input modelgraph.OnlineInput) int
 	}
 
 	User struct {
@@ -189,7 +196,7 @@ type MutationResolver interface {
 	Booking(ctx context.Context, input modelgraph.BookingInput) (*modelgraph.Booking, error)
 	Caddy(ctx context.Context, input modelgraph.CaddyInput) (*modelgraph.Caddy, error)
 	DeleteCaddy(ctx context.Context, id string) (*modelgraph.Caddy, error)
-	PostMessage(ctx context.Context, user string, text string) (*modelgraph.Message, error)
+	PostMessage(ctx context.Context, inpuy *modelgraph.PostMessageInput) (*modelgraph.Message, error)
 	CourseGolf(ctx context.Context, input modelgraph.CourseGolfInput) (*modelgraph.CourseGolf, error)
 	DeleteCourseGolf(ctx context.Context, id string) (*modelgraph.CourseGolf, error)
 	Customer(ctx context.Context, input modelgraph.CustomerInput) (*modelgraph.Customer, error)
@@ -201,8 +208,8 @@ type QueryResolver interface {
 	GetBookings(ctx context.Context, input modelgraph.BookingsInput) (*modelgraph.BookingData, error)
 	GetCaddy(ctx context.Context, input modelgraph.GetCaddyInput) (*modelgraph.Caddy, error)
 	GetCaddys(ctx context.Context, input modelgraph.GetCaddysInput) (*modelgraph.CaddyData, error)
-	Messages(ctx context.Context) ([]*modelgraph.Message, error)
-	Users(ctx context.Context) ([]string, error)
+	GetMessages(ctx context.Context, input modelgraph.GetMessagesInput) ([]*modelgraph.Message, error)
+	GetOnline(ctx context.Context, input modelgraph.GetOnlineInput) ([]*modelgraph.Online, error)
 	GetCourseGolf(ctx context.Context, input modelgraph.GetCourseGolfInput) (*modelgraph.CourseGolf, error)
 	GetCourseGolfs(ctx context.Context, input modelgraph.GetCourseGolfsInput) (*modelgraph.CourseGolfData, error)
 	GetCustomer(ctx context.Context, input modelgraph.GetCustomerInput) (*modelgraph.Customer, error)
@@ -210,8 +217,8 @@ type QueryResolver interface {
 	GetUser(ctx context.Context, input modelgraph.GetUserInput) (*modelgraph.User, error)
 }
 type SubscriptionResolver interface {
-	MessagePosted(ctx context.Context, user string) (<-chan *modelgraph.Message, error)
-	UserJoined(ctx context.Context, user string) (<-chan string, error)
+	Chat(ctx context.Context, input modelgraph.ChatInput) (<-chan *modelgraph.Message, error)
+	Online(ctx context.Context, input modelgraph.OnlineInput) (<-chan string, error)
 }
 
 type executableSchema struct {
@@ -509,26 +516,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Message.CreatedAt(childComplexity), true
 
-	case "Message.id":
-		if e.complexity.Message.ID == nil {
+	case "Message.fromUserId":
+		if e.complexity.Message.FromUserID == nil {
 			break
 		}
 
-		return e.complexity.Message.ID(childComplexity), true
+		return e.complexity.Message.FromUserID(childComplexity), true
 
-	case "Message.text":
-		if e.complexity.Message.Text == nil {
+	case "Message.message":
+		if e.complexity.Message.Message == nil {
 			break
 		}
 
-		return e.complexity.Message.Text(childComplexity), true
+		return e.complexity.Message.Message(childComplexity), true
 
-	case "Message.user":
-		if e.complexity.Message.User == nil {
+	case "Message.roomId":
+		if e.complexity.Message.RoomID == nil {
 			break
 		}
 
-		return e.complexity.Message.User(childComplexity), true
+		return e.complexity.Message.RoomID(childComplexity), true
+
+	case "Message.toUserId":
+		if e.complexity.Message.ToUserID == nil {
+			break
+		}
+
+		return e.complexity.Message.ToUserID(childComplexity), true
 
 	case "Mutation.booking":
 		if e.complexity.Mutation.Booking == nil {
@@ -624,7 +638,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PostMessage(childComplexity, args["user"].(string), args["text"].(string)), true
+		return e.complexity.Mutation.PostMessage(childComplexity, args["inpuy"].(*modelgraph.PostMessageInput)), true
 
 	case "Mutation.user":
 		if e.complexity.Mutation.User == nil {
@@ -637,6 +651,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.User(childComplexity, args["input"].(modelgraph.UserInput)), true
+
+	case "Online.lastOnline":
+		if e.complexity.Online.LastOnline == nil {
+			break
+		}
+
+		return e.complexity.Online.LastOnline(childComplexity), true
+
+	case "Online.userId":
+		if e.complexity.Online.UserID == nil {
+			break
+		}
+
+		return e.complexity.Online.UserID(childComplexity), true
+
+	case "Online.userName":
+		if e.complexity.Online.UserName == nil {
+			break
+		}
+
+		return e.complexity.Online.UserName(childComplexity), true
 
 	case "PaginationType.limit":
 		if e.complexity.PaginationType.Limit == nil {
@@ -855,6 +890,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetCustomer(childComplexity, args["input"].(modelgraph.GetCustomerInput)), true
 
+	case "Query.getMessages":
+		if e.complexity.Query.GetMessages == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMessages_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMessages(childComplexity, args["input"].(modelgraph.GetMessagesInput)), true
+
+	case "Query.getOnline":
+		if e.complexity.Query.GetOnline == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getOnline_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetOnline(childComplexity, args["input"].(modelgraph.GetOnlineInput)), true
+
 	case "Query.getPayment":
 		if e.complexity.Query.GetPayment == nil {
 			break
@@ -879,43 +938,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetUser(childComplexity, args["input"].(modelgraph.GetUserInput)), true
 
-	case "Query.messages":
-		if e.complexity.Query.Messages == nil {
+	case "Subscription.chat":
+		if e.complexity.Subscription.Chat == nil {
 			break
 		}
 
-		return e.complexity.Query.Messages(childComplexity), true
-
-	case "Query.users":
-		if e.complexity.Query.Users == nil {
-			break
-		}
-
-		return e.complexity.Query.Users(childComplexity), true
-
-	case "Subscription.messagePosted":
-		if e.complexity.Subscription.MessagePosted == nil {
-			break
-		}
-
-		args, err := ec.field_Subscription_messagePosted_args(context.TODO(), rawArgs)
+		args, err := ec.field_Subscription_chat_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Subscription.MessagePosted(childComplexity, args["user"].(string)), true
+		return e.complexity.Subscription.Chat(childComplexity, args["input"].(modelgraph.ChatInput)), true
 
-	case "Subscription.userJoined":
-		if e.complexity.Subscription.UserJoined == nil {
+	case "Subscription.online":
+		if e.complexity.Subscription.Online == nil {
 			break
 		}
 
-		args, err := ec.field_Subscription_userJoined_args(context.TODO(), rawArgs)
+		args, err := ec.field_Subscription_online_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Subscription.UserJoined(childComplexity, args["user"].(string)), true
+		return e.complexity.Subscription.Online(childComplexity, args["input"].(modelgraph.OnlineInput)), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -942,6 +987,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputBookingInput,
 		ec.unmarshalInputBookingsInput,
 		ec.unmarshalInputCaddyInput,
+		ec.unmarshalInputChatInput,
 		ec.unmarshalInputCourseGolfInput,
 		ec.unmarshalInputCustomerInput,
 		ec.unmarshalInputGetBookingInput,
@@ -950,10 +996,14 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputGetCourseGolfInput,
 		ec.unmarshalInputGetCourseGolfsInput,
 		ec.unmarshalInputGetCustomerInput,
+		ec.unmarshalInputGetMessagesInput,
+		ec.unmarshalInputGetOnlineInput,
 		ec.unmarshalInputGetPaymentInput,
 		ec.unmarshalInputGetUserInput,
+		ec.unmarshalInputOnlineInput,
 		ec.unmarshalInputPaginationInput,
 		ec.unmarshalInputPaymentInput,
+		ec.unmarshalInputPostMessageInput,
 		ec.unmarshalInputUserInput,
 	)
 	first := true
@@ -1166,24 +1216,15 @@ func (ec *executionContext) field_Mutation_payment_args(ctx context.Context, raw
 func (ec *executionContext) field_Mutation_postMessage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["user"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 *modelgraph.PostMessageInput
+	if tmp, ok := rawArgs["inpuy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inpuy"))
+		arg0, err = ec.unmarshalOPostMessageInput2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPostMessageInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["user"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["text"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["text"] = arg1
+	args["inpuy"] = arg0
 	return args, nil
 }
 
@@ -1322,6 +1363,36 @@ func (ec *executionContext) field_Query_getCustomer_args(ctx context.Context, ra
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_getMessages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 modelgraph.GetMessagesInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNGetMessagesInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetMessagesInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getOnline_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 modelgraph.GetOnlineInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNGetOnlineInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetOnlineInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_getPayment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1352,33 +1423,33 @@ func (ec *executionContext) field_Query_getUser_args(ctx context.Context, rawArg
 	return args, nil
 }
 
-func (ec *executionContext) field_Subscription_messagePosted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Subscription_chat_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["user"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 modelgraph.ChatInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNChatInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐChatInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["user"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
-func (ec *executionContext) field_Subscription_userJoined_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Subscription_online_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["user"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 modelgraph.OnlineInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNOnlineInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐOnlineInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["user"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -3217,8 +3288,8 @@ func (ec *executionContext) fieldContext_Customer_images(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Message_id(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Message) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Message_id(ctx, field)
+func (ec *executionContext) _Message_toUserId(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Message) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Message_toUserId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3231,7 +3302,7 @@ func (ec *executionContext) _Message_id(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return obj.ToUserID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3248,7 +3319,7 @@ func (ec *executionContext) _Message_id(ctx context.Context, field graphql.Colle
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_toUserId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -3261,8 +3332,8 @@ func (ec *executionContext) fieldContext_Message_id(ctx context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _Message_user(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Message) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Message_user(ctx, field)
+func (ec *executionContext) _Message_fromUserId(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Message) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Message_fromUserId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3275,7 +3346,7 @@ func (ec *executionContext) _Message_user(ctx context.Context, field graphql.Col
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.User, nil
+		return obj.FromUserID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3292,7 +3363,51 @@ func (ec *executionContext) _Message_user(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_fromUserId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Message",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Message_message(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Message) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Message_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Message_message(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -3349,8 +3464,8 @@ func (ec *executionContext) fieldContext_Message_createdAt(ctx context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Message_text(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Message) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Message_text(ctx, field)
+func (ec *executionContext) _Message_roomId(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Message) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Message_roomId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -3363,7 +3478,7 @@ func (ec *executionContext) _Message_text(ctx context.Context, field graphql.Col
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Text, nil
+		return obj.RoomID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3380,7 +3495,7 @@ func (ec *executionContext) _Message_text(ctx context.Context, field graphql.Col
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Message_text(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Message_roomId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Message",
 		Field:      field,
@@ -3640,7 +3755,7 @@ func (ec *executionContext) _Mutation_postMessage(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PostMessage(rctx, fc.Args["user"].(string), fc.Args["text"].(string))
+		return ec.resolvers.Mutation().PostMessage(rctx, fc.Args["inpuy"].(*modelgraph.PostMessageInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3662,14 +3777,16 @@ func (ec *executionContext) fieldContext_Mutation_postMessage(ctx context.Contex
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Message_id(ctx, field)
-			case "user":
-				return ec.fieldContext_Message_user(ctx, field)
+			case "toUserId":
+				return ec.fieldContext_Message_toUserId(ctx, field)
+			case "fromUserId":
+				return ec.fieldContext_Message_fromUserId(ctx, field)
+			case "message":
+				return ec.fieldContext_Message_message(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Message_createdAt(ctx, field)
-			case "text":
-				return ec.fieldContext_Message_text(ctx, field)
+			case "roomId":
+				return ec.fieldContext_Message_roomId(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
 		},
@@ -4045,6 +4162,138 @@ func (ec *executionContext) fieldContext_Mutation_user(ctx context.Context, fiel
 	if fc.Args, err = ec.field_Mutation_user_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Online_userId(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Online) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Online_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Online_userId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Online",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Online_userName(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Online) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Online_userName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Online_userName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Online",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Online_lastOnline(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Online) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Online_lastOnline(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LastOnline, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Online_lastOnline(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Online",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
 	}
 	return fc, nil
 }
@@ -5115,8 +5364,8 @@ func (ec *executionContext) fieldContext_Query_getCaddys(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_messages(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_messages(ctx, field)
+func (ec *executionContext) _Query_getMessages(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getMessages(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -5129,7 +5378,7 @@ func (ec *executionContext) _Query_messages(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Messages(rctx)
+		return ec.resolvers.Query().GetMessages(rctx, fc.Args["input"].(modelgraph.GetMessagesInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5146,7 +5395,7 @@ func (ec *executionContext) _Query_messages(ctx context.Context, field graphql.C
 	return ec.marshalNMessage2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐMessageᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_messages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_getMessages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -5154,23 +5403,36 @@ func (ec *executionContext) fieldContext_Query_messages(ctx context.Context, fie
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Message_id(ctx, field)
-			case "user":
-				return ec.fieldContext_Message_user(ctx, field)
+			case "toUserId":
+				return ec.fieldContext_Message_toUserId(ctx, field)
+			case "fromUserId":
+				return ec.fieldContext_Message_fromUserId(ctx, field)
+			case "message":
+				return ec.fieldContext_Message_message(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Message_createdAt(ctx, field)
-			case "text":
-				return ec.fieldContext_Message_text(ctx, field)
+			case "roomId":
+				return ec.fieldContext_Message_roomId(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
 		},
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getMessages_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_users(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_users(ctx, field)
+func (ec *executionContext) _Query_getOnline(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getOnline(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -5183,7 +5445,7 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Users(rctx)
+		return ec.resolvers.Query().GetOnline(rctx, fc.Args["input"].(modelgraph.GetOnlineInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5195,20 +5457,39 @@ func (ec *executionContext) _Query_users(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]string)
+	res := resTmp.([]*modelgraph.Online)
 	fc.Result = res
-	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+	return ec.marshalNOnline2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐOnlineᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_getOnline(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			switch field.Name {
+			case "userId":
+				return ec.fieldContext_Online_userId(ctx, field)
+			case "userName":
+				return ec.fieldContext_Online_userName(ctx, field)
+			case "lastOnline":
+				return ec.fieldContext_Online_lastOnline(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Online", field.Name)
 		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getOnline_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
 	}
 	return fc, nil
 }
@@ -5691,8 +5972,8 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Subscription_messagePosted(ctx context.Context, field graphql.CollectedField) (ret func(ctx context.Context) graphql.Marshaler) {
-	fc, err := ec.fieldContext_Subscription_messagePosted(ctx, field)
+func (ec *executionContext) _Subscription_chat(ctx context.Context, field graphql.CollectedField) (ret func(ctx context.Context) graphql.Marshaler) {
+	fc, err := ec.fieldContext_Subscription_chat(ctx, field)
 	if err != nil {
 		return nil
 	}
@@ -5705,7 +5986,7 @@ func (ec *executionContext) _Subscription_messagePosted(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().MessagePosted(rctx, fc.Args["user"].(string))
+		return ec.resolvers.Subscription().Chat(rctx, fc.Args["input"].(modelgraph.ChatInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5736,7 +6017,7 @@ func (ec *executionContext) _Subscription_messagePosted(ctx context.Context, fie
 	}
 }
 
-func (ec *executionContext) fieldContext_Subscription_messagePosted(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Subscription_chat(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Subscription",
 		Field:      field,
@@ -5744,14 +6025,16 @@ func (ec *executionContext) fieldContext_Subscription_messagePosted(ctx context.
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Message_id(ctx, field)
-			case "user":
-				return ec.fieldContext_Message_user(ctx, field)
+			case "toUserId":
+				return ec.fieldContext_Message_toUserId(ctx, field)
+			case "fromUserId":
+				return ec.fieldContext_Message_fromUserId(ctx, field)
+			case "message":
+				return ec.fieldContext_Message_message(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Message_createdAt(ctx, field)
-			case "text":
-				return ec.fieldContext_Message_text(ctx, field)
+			case "roomId":
+				return ec.fieldContext_Message_roomId(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
 		},
@@ -5763,15 +6046,15 @@ func (ec *executionContext) fieldContext_Subscription_messagePosted(ctx context.
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Subscription_messagePosted_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Subscription_chat_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Subscription_userJoined(ctx context.Context, field graphql.CollectedField) (ret func(ctx context.Context) graphql.Marshaler) {
-	fc, err := ec.fieldContext_Subscription_userJoined(ctx, field)
+func (ec *executionContext) _Subscription_online(ctx context.Context, field graphql.CollectedField) (ret func(ctx context.Context) graphql.Marshaler) {
+	fc, err := ec.fieldContext_Subscription_online(ctx, field)
 	if err != nil {
 		return nil
 	}
@@ -5784,7 +6067,7 @@ func (ec *executionContext) _Subscription_userJoined(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().UserJoined(rctx, fc.Args["user"].(string))
+		return ec.resolvers.Subscription().Online(rctx, fc.Args["input"].(modelgraph.OnlineInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5815,7 +6098,7 @@ func (ec *executionContext) _Subscription_userJoined(ctx context.Context, field 
 	}
 }
 
-func (ec *executionContext) fieldContext_Subscription_userJoined(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Subscription_online(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Subscription",
 		Field:      field,
@@ -5832,7 +6115,7 @@ func (ec *executionContext) fieldContext_Subscription_userJoined(ctx context.Con
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Subscription_userJoined_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Subscription_online_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -7967,6 +8250,44 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputChatInput(ctx context.Context, obj interface{}) (modelgraph.ChatInput, error) {
+	var it modelgraph.ChatInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"roomId", "currentUserId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "roomId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roomId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RoomID = data
+		case "currentUserId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currentUserId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrentUserID = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCourseGolfInput(ctx context.Context, obj interface{}) (modelgraph.CourseGolfInput, error) {
 	var it modelgraph.CourseGolfInput
 	asMap := map[string]interface{}{}
@@ -8343,6 +8664,73 @@ func (ec *executionContext) unmarshalInputGetCustomerInput(ctx context.Context, 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputGetMessagesInput(ctx context.Context, obj interface{}) (modelgraph.GetMessagesInput, error) {
+	var it modelgraph.GetMessagesInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"toUserId", "fromUserId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "toUserId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("toUserId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ToUserID = data
+		case "fromUserId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fromUserId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FromUserID = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputGetOnlineInput(ctx context.Context, obj interface{}) (modelgraph.GetOnlineInput, error) {
+	var it modelgraph.GetOnlineInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"toUserId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "toUserId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("toUserId"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ToUserID = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputGetPaymentInput(ctx context.Context, obj interface{}) (modelgraph.GetPaymentInput, error) {
 	var it modelgraph.GetPaymentInput
 	asMap := map[string]interface{}{}
@@ -8413,6 +8801,35 @@ func (ec *executionContext) unmarshalInputGetUserInput(ctx context.Context, obj 
 				return it, err
 			}
 			it.Language = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputOnlineInput(ctx context.Context, obj interface{}) (modelgraph.OnlineInput, error) {
+	var it modelgraph.OnlineInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"currentUserId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "currentUserId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currentUserId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CurrentUserID = data
 		}
 	}
 
@@ -8651,6 +9068,62 @@ func (ec *executionContext) unmarshalInputPaymentInput(ctx context.Context, obj 
 				return it, err
 			}
 			it.CheckSum = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPostMessageInput(ctx context.Context, obj interface{}) (modelgraph.PostMessageInput, error) {
+	var it modelgraph.PostMessageInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"toUserId", "fromUserId", "message", "roomId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "toUserId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("toUserId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ToUserID = data
+		case "fromUserId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fromUserId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.FromUserID = data
+		case "message":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("message"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Message = data
+		case "roomId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roomId"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RoomID = data
 		}
 	}
 
@@ -9106,16 +9579,23 @@ func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Message")
-		case "id":
+		case "toUserId":
 
-			out.Values[i] = ec._Message_id(ctx, field, obj)
+			out.Values[i] = ec._Message_toUserId(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "user":
+		case "fromUserId":
 
-			out.Values[i] = ec._Message_user(ctx, field, obj)
+			out.Values[i] = ec._Message_fromUserId(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "message":
+
+			out.Values[i] = ec._Message_message(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -9127,9 +9607,9 @@ func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "text":
+		case "roomId":
 
-			out.Values[i] = ec._Message_text(ctx, field, obj)
+			out.Values[i] = ec._Message_roomId(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -9238,6 +9718,48 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_user(ctx, field)
 			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var onlineImplementors = []string{"Online"}
+
+func (ec *executionContext) _Online(ctx context.Context, sel ast.SelectionSet, obj *modelgraph.Online) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, onlineImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Online")
+		case "userId":
+
+			out.Values[i] = ec._Online_userId(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "userName":
+
+			out.Values[i] = ec._Online_userName(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "lastOnline":
+
+			out.Values[i] = ec._Online_lastOnline(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -9491,7 +10013,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "messages":
+		case "getMessages":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -9500,7 +10022,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_messages(ctx, field)
+				res = ec._Query_getMessages(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -9514,7 +10036,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "users":
+		case "getOnline":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -9523,7 +10045,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_users(ctx, field)
+				res = ec._Query_getOnline(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -9688,10 +10210,10 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 	}
 
 	switch fields[0].Name {
-	case "messagePosted":
-		return ec._Subscription_messagePosted(ctx, fields[0])
-	case "userJoined":
-		return ec._Subscription_userJoined(ctx, fields[0])
+	case "chat":
+		return ec._Subscription_chat(ctx, fields[0])
+	case "online":
+		return ec._Subscription_online(ctx, fields[0])
 	default:
 		panic("unknown field " + strconv.Quote(fields[0].Name))
 	}
@@ -10224,6 +10746,11 @@ func (ec *executionContext) unmarshalNCaddyInput2cadigoᚑapiᚋgraphᚋmodelgra
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNChatInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐChatInput(ctx context.Context, v interface{}) (modelgraph.ChatInput, error) {
+	res, err := ec.unmarshalInputChatInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNCourseGolf2cadigoᚑapiᚋgraphᚋmodelgraphᚐCourseGolf(ctx context.Context, sel ast.SelectionSet, v modelgraph.CourseGolf) graphql.Marshaler {
 	return ec._CourseGolf(ctx, sel, &v)
 }
@@ -10365,6 +10892,16 @@ func (ec *executionContext) unmarshalNGetCustomerInput2cadigoᚑapiᚋgraphᚋmo
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNGetMessagesInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetMessagesInput(ctx context.Context, v interface{}) (modelgraph.GetMessagesInput, error) {
+	res, err := ec.unmarshalInputGetMessagesInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNGetOnlineInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetOnlineInput(ctx context.Context, v interface{}) (modelgraph.GetOnlineInput, error) {
+	res, err := ec.unmarshalInputGetOnlineInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNGetPaymentInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetPaymentInput(ctx context.Context, v interface{}) (modelgraph.GetPaymentInput, error) {
 	res, err := ec.unmarshalInputGetPaymentInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -10456,6 +10993,65 @@ func (ec *executionContext) marshalNMessage2ᚖcadigoᚑapiᚋgraphᚋmodelgraph
 		return graphql.Null
 	}
 	return ec._Message(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNOnline2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐOnlineᚄ(ctx context.Context, sel ast.SelectionSet, v []*modelgraph.Online) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNOnline2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐOnline(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNOnline2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐOnline(ctx context.Context, sel ast.SelectionSet, v *modelgraph.Online) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Online(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNOnlineInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐOnlineInput(ctx context.Context, v interface{}) (modelgraph.OnlineInput, error) {
+	res, err := ec.unmarshalInputOnlineInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNPaginationInput2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPaginationInput(ctx context.Context, v interface{}) (*modelgraph.PaginationInput, error) {
@@ -10926,6 +11522,14 @@ func (ec *executionContext) marshalOMessage2ᚖcadigoᚑapiᚋgraphᚋmodelgraph
 		return graphql.Null
 	}
 	return ec._Message(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOPostMessageInput2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPostMessageInput(ctx context.Context, v interface{}) (*modelgraph.PostMessageInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputPostMessageInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
