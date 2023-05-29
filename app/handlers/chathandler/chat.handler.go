@@ -65,7 +65,7 @@ func (s *Handler) PostMessage(ctx context.Context, input *modelgraph.PostMessage
 		RoomID:     roomID,
 	}
 	mj, _ := json.Marshal(m)
-	if err := s.redisClient.LPush(m.RoomID, mj).Err(); err != nil {
+	if err := s.redisClient.RPush(m.RoomID, mj).Err(); err != nil {
 		log.Println(err)
 		return nil, err
 	}
@@ -84,14 +84,22 @@ func (s *Handler) PostMessage(ctx context.Context, input *modelgraph.PostMessage
 	return m, nil
 }
 
-func (s *Handler) GetMessages(ctx context.Context, input modelgraph.GetMessagesInput) ([]*modelgraph.Message, error) {
-	roomID, err := s.getRoom(input.FromUserID, input.ToUserID)
+func (s *Handler) GetMessages(ctx context.Context, input modelgraph.GetMessagesInput) (*modelgraph.GetMessagesType, error) {
+	var roomID string
+
+	getRoom, err := s.getRoom(input.FromUserID, input.ToUserID)
+
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		roomID = ksuid.New().String()
+		err := s.createRoom(input.FromUserID, input.ToUserID, roomID)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		roomID = *getRoom
 	}
 
-	cmd := s.redisClient.LRange(*roomID, 0, -1)
+	cmd := s.redisClient.LRange(roomID, 0, -1)
 	if cmd.Err() != nil {
 		log.Println(cmd.Err())
 		return nil, cmd.Err()
@@ -107,7 +115,15 @@ func (s *Handler) GetMessages(ctx context.Context, input modelgraph.GetMessagesI
 		err = json.Unmarshal([]byte(mj), &m)
 		messages = append(messages, m)
 	}
-	return messages, nil
+
+	if len(messages) == 0 {
+
+	}
+
+	return &modelgraph.GetMessagesType{
+		Data:   messages,
+		RoomID: roomID,
+	}, nil
 }
 
 func (s *Handler) GetOnline(ctx context.Context, input modelgraph.GetOnlineInput) ([]*modelgraph.Online, error) {

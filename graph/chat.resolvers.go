@@ -15,7 +15,7 @@ func (r *mutationResolver) PostMessage(ctx context.Context, inpuy *modelgraph.Po
 }
 
 // GetMessages is the resolver for the getMessages field.
-func (r *queryResolver) GetMessages(ctx context.Context, input modelgraph.GetMessagesInput) ([]*modelgraph.Message, error) {
+func (r *queryResolver) GetMessages(ctx context.Context, input modelgraph.GetMessagesInput) (*modelgraph.GetMessagesType, error) {
 	return r.ChatHandler.GetMessages(ctx, input)
 }
 

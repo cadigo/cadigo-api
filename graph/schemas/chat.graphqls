@@ -29,6 +29,12 @@ input GetOnlineInput {
   toUserId: [String!]!
 }
 
+# Type
+type GetMessagesType {
+  data: [Message!]!
+  roomId: String!
+}
+
 type Message {
   toUserId: String!
   fromUserId: String!
@@ -48,7 +54,7 @@ extend type Mutation {
 }
 
 extend type Query {
-  getMessages(input: GetMessagesInput!): [Message!]!
+  getMessages(input: GetMessagesInput!): GetMessagesType!
   getOnline(input: GetOnlineInput!): [Online!]!
 }
 

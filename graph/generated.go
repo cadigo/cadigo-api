@@ -109,6 +109,11 @@ type ComplexityRoot struct {
 		UserID func(childComplexity int) int
 	}
 
+	GetMessagesType struct {
+		Data   func(childComplexity int) int
+		RoomID func(childComplexity int) int
+	}
+
 	Message struct {
 		CreatedAt  func(childComplexity int) int
 		FromUserID func(childComplexity int) int
@@ -208,7 +213,7 @@ type QueryResolver interface {
 	GetBookings(ctx context.Context, input modelgraph.BookingsInput) (*modelgraph.BookingData, error)
 	GetCaddy(ctx context.Context, input modelgraph.GetCaddyInput) (*modelgraph.Caddy, error)
 	GetCaddys(ctx context.Context, input modelgraph.GetCaddysInput) (*modelgraph.CaddyData, error)
-	GetMessages(ctx context.Context, input modelgraph.GetMessagesInput) ([]*modelgraph.Message, error)
+	GetMessages(ctx context.Context, input modelgraph.GetMessagesInput) (*modelgraph.GetMessagesType, error)
 	GetOnline(ctx context.Context, input modelgraph.GetOnlineInput) ([]*modelgraph.Online, error)
 	GetCourseGolf(ctx context.Context, input modelgraph.GetCourseGolfInput) (*modelgraph.CourseGolf, error)
 	GetCourseGolfs(ctx context.Context, input modelgraph.GetCourseGolfsInput) (*modelgraph.CourseGolfData, error)
@@ -508,6 +513,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Customer.UserID(childComplexity), true
+
+	case "GetMessagesType.data":
+		if e.complexity.GetMessagesType.Data == nil {
+			break
+		}
+
+		return e.complexity.GetMessagesType.Data(childComplexity), true
+
+	case "GetMessagesType.roomId":
+		if e.complexity.GetMessagesType.RoomID == nil {
+			break
+		}
+
+		return e.complexity.GetMessagesType.RoomID(childComplexity), true
 
 	case "Message.createdAt":
 		if e.complexity.Message.CreatedAt == nil {
@@ -3288,6 +3307,106 @@ func (ec *executionContext) fieldContext_Customer_images(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _GetMessagesType_data(ctx context.Context, field graphql.CollectedField, obj *modelgraph.GetMessagesType) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetMessagesType_data(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*modelgraph.Message)
+	fc.Result = res
+	return ec.marshalNMessage2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐMessageᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetMessagesType_data(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetMessagesType",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "toUserId":
+				return ec.fieldContext_Message_toUserId(ctx, field)
+			case "fromUserId":
+				return ec.fieldContext_Message_fromUserId(ctx, field)
+			case "message":
+				return ec.fieldContext_Message_message(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Message_createdAt(ctx, field)
+			case "roomId":
+				return ec.fieldContext_Message_roomId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GetMessagesType_roomId(ctx context.Context, field graphql.CollectedField, obj *modelgraph.GetMessagesType) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GetMessagesType_roomId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RoomID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GetMessagesType_roomId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GetMessagesType",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Message_toUserId(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Message) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Message_toUserId(ctx, field)
 	if err != nil {
@@ -5390,9 +5509,9 @@ func (ec *executionContext) _Query_getMessages(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*modelgraph.Message)
+	res := resTmp.(*modelgraph.GetMessagesType)
 	fc.Result = res
-	return ec.marshalNMessage2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐMessageᚄ(ctx, field.Selections, res)
+	return ec.marshalNGetMessagesType2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐGetMessagesType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getMessages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -5403,18 +5522,12 @@ func (ec *executionContext) fieldContext_Query_getMessages(ctx context.Context, 
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "toUserId":
-				return ec.fieldContext_Message_toUserId(ctx, field)
-			case "fromUserId":
-				return ec.fieldContext_Message_fromUserId(ctx, field)
-			case "message":
-				return ec.fieldContext_Message_message(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Message_createdAt(ctx, field)
+			case "data":
+				return ec.fieldContext_GetMessagesType_data(ctx, field)
 			case "roomId":
-				return ec.fieldContext_Message_roomId(ctx, field)
+				return ec.fieldContext_GetMessagesType_roomId(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type GetMessagesType", field.Name)
 		},
 	}
 	defer func() {
@@ -9569,6 +9682,41 @@ func (ec *executionContext) _Customer(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var getMessagesTypeImplementors = []string{"GetMessagesType"}
+
+func (ec *executionContext) _GetMessagesType(ctx context.Context, sel ast.SelectionSet, obj *modelgraph.GetMessagesType) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, getMessagesTypeImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GetMessagesType")
+		case "data":
+
+			out.Values[i] = ec._GetMessagesType_data(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "roomId":
+
+			out.Values[i] = ec._GetMessagesType_roomId(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var messageImplementors = []string{"Message"}
 
 func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, obj *modelgraph.Message) graphql.Marshaler {
@@ -10895,6 +11043,20 @@ func (ec *executionContext) unmarshalNGetCustomerInput2cadigoᚑapiᚋgraphᚋmo
 func (ec *executionContext) unmarshalNGetMessagesInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetMessagesInput(ctx context.Context, v interface{}) (modelgraph.GetMessagesInput, error) {
 	res, err := ec.unmarshalInputGetMessagesInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNGetMessagesType2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetMessagesType(ctx context.Context, sel ast.SelectionSet, v modelgraph.GetMessagesType) graphql.Marshaler {
+	return ec._GetMessagesType(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGetMessagesType2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐGetMessagesType(ctx context.Context, sel ast.SelectionSet, v *modelgraph.GetMessagesType) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GetMessagesType(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNGetOnlineInput2cadigoᚑapiᚋgraphᚋmodelgraphᚐGetOnlineInput(ctx context.Context, v interface{}) (modelgraph.GetOnlineInput, error) {
