@@ -46,16 +46,18 @@ type BookingsInput struct {
 }
 
 type Caddy struct {
-	ID           *string   `json:"id,omitempty" copier:"Id"`
-	Name         *string   `json:"name,omitempty" copier:"Name"`
-	Location     *string   `json:"location,omitempty" copier:"Location"`
-	Avialability *string   `json:"avialability,omitempty" copier:"Avialability"`
-	Skill        []*string `json:"skill,omitempty" copier:"Skill"`
-	Start        *int      `json:"start,omitempty" copier:"Start"`
-	Description  *string   `json:"description,omitempty" copier:"Description"`
-	Time         []*string `json:"time,omitempty" copier:"Time"`
-	Cost         *float64  `json:"cost,omitempty" copier:"Cost"`
-	Images       []*string `json:"images,omitempty" copier:"Images"`
+	ID            *string       `json:"id,omitempty" copier:"Id"`
+	Name          *string       `json:"name,omitempty" copier:"Name"`
+	Location      *string       `json:"location,omitempty" copier:"Location"`
+	Avialability  *string       `json:"avialability,omitempty" copier:"Avialability"`
+	Skill         []*string     `json:"skill,omitempty" copier:"Skill"`
+	Start         *int          `json:"start,omitempty" copier:"Start"`
+	Description   *string       `json:"description,omitempty" copier:"Description"`
+	Time          []*string     `json:"time,omitempty" copier:"Time"`
+	Cost          *float64      `json:"cost,omitempty" copier:"Cost"`
+	Images        []*string     `json:"images,omitempty" copier:"Images"`
+	CourseGolfIDs []*string     `json:"courseGolfIDs,omitempty" copier:"CourseGolfIDs"`
+	CourseGolf    []*CourseGolf `json:"courseGolf,omitempty" copier:"CourseGolf"`
 }
 
 type CaddyData struct {
@@ -64,18 +66,19 @@ type CaddyData struct {
 }
 
 type CaddyInput struct {
-	ID           *string      `json:"id,omitempty" copier:"Id"`
-	Name         string       `json:"name" copier:"Name"`
-	Location     string       `json:"location" copier:"Location"`
-	Avialability string       `json:"avialability" copier:"Avialability"`
-	Skill        []string     `json:"skill,omitempty" copier:"Skill"`
-	Start        int          `json:"start" copier:"Start"`
-	Description  *string      `json:"description,omitempty" copier:"Description"`
-	Time         []string     `json:"time,omitempty" copier:"Time"`
-	Cost         float64      `json:"cost" copier:"Cost"`
-	Images       []string     `json:"images,omitempty" copier:"Images"`
-	Language     LanguageEnum `json:"language" copier:"Language"`
-	IsActive     bool         `json:"isActive" copier:"IsActive"`
+	ID            *string      `json:"id,omitempty" copier:"Id"`
+	Name          string       `json:"name" copier:"Name"`
+	Location      string       `json:"location" copier:"Location"`
+	Avialability  string       `json:"avialability" copier:"Avialability"`
+	Skill         []string     `json:"skill,omitempty" copier:"Skill"`
+	Start         int          `json:"start" copier:"Start"`
+	Description   *string      `json:"description,omitempty" copier:"Description"`
+	Time          []string     `json:"time,omitempty" copier:"Time"`
+	Cost          float64      `json:"cost" copier:"Cost"`
+	Images        []string     `json:"images,omitempty" copier:"Images"`
+	Language      LanguageEnum `json:"language" copier:"Language"`
+	IsActive      bool         `json:"isActive" copier:"IsActive"`
+	CourseGolfIDs []string     `json:"courseGolfIDs" copier:"CourseGolfIDs"`
 }
 
 type ChatInput struct {

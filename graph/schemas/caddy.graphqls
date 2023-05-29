@@ -18,6 +18,8 @@ type Caddy {
   time: [String]
   cost: Float
   images: [String]
+  courseGolfIDs: [String]
+  courseGolf: [CourseGolf]
 }
 
 # GraphQl schema Input
@@ -49,6 +51,7 @@ input CaddyInput {
   images: [String!]
   language: LanguageEnum!
   isActive: Boolean!
+  courseGolfIDs: [String!]!
 }
 
 # Query

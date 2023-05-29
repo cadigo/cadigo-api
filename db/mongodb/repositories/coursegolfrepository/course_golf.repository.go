@@ -132,6 +132,37 @@ func (repo *Repository) GetByID(ctx context.Context, id string) (*modela.CourseG
 	return &c, nil
 }
 
+func (repo *Repository) GetByIDs(ctx context.Context, ids []string) (result *[]modela.CourseGolf, err error) {
+	var (
+		// err        error
+		courseGolf modeld.CourseGolf
+	)
+
+	oids := make([]primitive.ObjectID, len(ids))
+	for i := range ids {
+		objID, err := primitive.ObjectIDFromHex(ids[i])
+		if err == nil {
+			oids = append(oids, objID)
+		}
+	}
+
+	collection := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
+
+	curs, err := collection.Find(ctx, bson.M{"_id": bson.M{"$in": oids}})
+	if err != nil {
+		return nil, err
+	}
+
+	courseGolf := []modeld.CourseGolf{}
+	if err = curs.All(ctx, &courseGolf); err != nil {
+		return nil, err
+	}
+
+	c := courseGolf.ToCourseGolf()
+
+	return &c, nil
+}
+
 func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination) (result []*modela.CourseGolf, total int64, err error) {
 	query := bson.M{}
 	opts := options.Find().

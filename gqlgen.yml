@@ -79,6 +79,10 @@ models:
         resolver: true
       caddy:
         resolver: true
+  Caddy:
+    fields:
+      courseGolf:
+        resolver: true     
   ID:
     model:
       - github.com/99designs/gqlgen/graphql.ID

@@ -7,15 +7,16 @@ import (
 )
 
 type Caddy struct {
-	ID           string   `json:"id,omitempty" copier:"Id"`
-	Name         string   `json:"name,omitempty" copier:"Name"`
-	Location     string   `json:"location,omitempty" copier:"Location"`
-	Avialability string   `json:"avialability,omitempty" copier:"Avialability"`
-	Skill        []string `json:"skill,omitempty" copier:"Skill"`
-	Start        int      `json:"start,omitempty" copier:"Start"`
-	Description  string   `json:"description,omitempty" copier:"Description,nopanic"`
-	Time         []string `json:"time,omitempty" copier:"Time"`
-	Cost         float64  `json:"cost,omitempty" copier:"Cost"`
+	ID            string   `json:"id,omitempty" copier:"Id"`
+	Name          string   `json:"name,omitempty" copier:"Name"`
+	Location      string   `json:"location,omitempty" copier:"Location"`
+	Avialability  string   `json:"avialability,omitempty" copier:"Avialability"`
+	Skill         []string `json:"skill,omitempty" copier:"Skill"`
+	Start         int      `json:"start,omitempty" copier:"Start"`
+	Description   string   `json:"description,omitempty" copier:"Description,nopanic"`
+	Time          []string `json:"time,omitempty" copier:"Time"`
+	Cost          float64  `json:"cost,omitempty" copier:"Cost"`
+	CourseGolfIDs []string `json:"courseGolfIDs,omitempty" copier:"CourseGolfIDs"`
 }
 
 func (this Caddy) Parse(graph modelgraph.CaddyInput) error {

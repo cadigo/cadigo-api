@@ -40,6 +40,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Booking() BookingResolver
+	Caddy() CaddyResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 	Subscription() SubscriptionResolver
@@ -69,16 +70,18 @@ type ComplexityRoot struct {
 	}
 
 	Caddy struct {
-		Avialability func(childComplexity int) int
-		Cost         func(childComplexity int) int
-		Description  func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Images       func(childComplexity int) int
-		Location     func(childComplexity int) int
-		Name         func(childComplexity int) int
-		Skill        func(childComplexity int) int
-		Start        func(childComplexity int) int
-		Time         func(childComplexity int) int
+		Avialability  func(childComplexity int) int
+		Cost          func(childComplexity int) int
+		CourseGolf    func(childComplexity int) int
+		CourseGolfIDs func(childComplexity int) int
+		Description   func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Images        func(childComplexity int) int
+		Location      func(childComplexity int) int
+		Name          func(childComplexity int) int
+		Skill         func(childComplexity int) int
+		Start         func(childComplexity int) int
+		Time          func(childComplexity int) int
 	}
 
 	CaddyData struct {
@@ -196,6 +199,9 @@ type BookingResolver interface {
 	CourseGolf(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.CourseGolf, error)
 
 	Caddy(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.Caddy, error)
+}
+type CaddyResolver interface {
+	CourseGolf(ctx context.Context, obj *modelgraph.Caddy) ([]*modelgraph.CourseGolf, error)
 }
 type MutationResolver interface {
 	Booking(ctx context.Context, input modelgraph.BookingInput) (*modelgraph.Booking, error)
@@ -345,6 +351,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Caddy.Cost(childComplexity), true
+
+	case "Caddy.courseGolf":
+		if e.complexity.Caddy.CourseGolf == nil {
+			break
+		}
+
+		return e.complexity.Caddy.CourseGolf(childComplexity), true
+
+	case "Caddy.courseGolfIDs":
+		if e.complexity.Caddy.CourseGolfIDs == nil {
+			break
+		}
+
+		return e.complexity.Caddy.CourseGolfIDs(childComplexity), true
 
 	case "Caddy.description":
 		if e.complexity.Caddy.Description == nil {
@@ -1984,6 +2004,10 @@ func (ec *executionContext) fieldContext_Booking_caddy(ctx context.Context, fiel
 				return ec.fieldContext_Caddy_cost(ctx, field)
 			case "images":
 				return ec.fieldContext_Caddy_images(ctx, field)
+			case "courseGolfIDs":
+				return ec.fieldContext_Caddy_courseGolfIDs(ctx, field)
+			case "courseGolf":
+				return ec.fieldContext_Caddy_courseGolf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Caddy", field.Name)
 		},
@@ -2562,6 +2586,106 @@ func (ec *executionContext) fieldContext_Caddy_images(ctx context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Caddy_courseGolfIDs(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Caddy) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Caddy_courseGolfIDs(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CourseGolfIDs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*string)
+	fc.Result = res
+	return ec.marshalOString2ᚕᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Caddy_courseGolfIDs(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Caddy",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Caddy_courseGolf(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Caddy) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Caddy_courseGolf(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Caddy().CourseGolf(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*modelgraph.CourseGolf)
+	fc.Result = res
+	return ec.marshalOCourseGolf2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCourseGolf(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Caddy_courseGolf(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Caddy",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_CourseGolf_id(ctx, field)
+			case "name":
+				return ec.fieldContext_CourseGolf_name(ctx, field)
+			case "images":
+				return ec.fieldContext_CourseGolf_images(ctx, field)
+			case "available":
+				return ec.fieldContext_CourseGolf_available(ctx, field)
+			case "location":
+				return ec.fieldContext_CourseGolf_location(ctx, field)
+			case "latitude":
+				return ec.fieldContext_CourseGolf_latitude(ctx, field)
+			case "longitude":
+				return ec.fieldContext_CourseGolf_longitude(ctx, field)
+			case "isActive":
+				return ec.fieldContext_CourseGolf_isActive(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CourseGolf", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _CaddyData_data(ctx context.Context, field graphql.CollectedField, obj *modelgraph.CaddyData) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_CaddyData_data(ctx, field)
 	if err != nil {
@@ -2621,6 +2745,10 @@ func (ec *executionContext) fieldContext_CaddyData_data(ctx context.Context, fie
 				return ec.fieldContext_Caddy_cost(ctx, field)
 			case "images":
 				return ec.fieldContext_Caddy_images(ctx, field)
+			case "courseGolfIDs":
+				return ec.fieldContext_Caddy_courseGolfIDs(ctx, field)
+			case "courseGolf":
+				return ec.fieldContext_Caddy_courseGolf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Caddy", field.Name)
 		},
@@ -3765,6 +3893,10 @@ func (ec *executionContext) fieldContext_Mutation_caddy(ctx context.Context, fie
 				return ec.fieldContext_Caddy_cost(ctx, field)
 			case "images":
 				return ec.fieldContext_Caddy_images(ctx, field)
+			case "courseGolfIDs":
+				return ec.fieldContext_Caddy_courseGolfIDs(ctx, field)
+			case "courseGolf":
+				return ec.fieldContext_Caddy_courseGolf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Caddy", field.Name)
 		},
@@ -3842,6 +3974,10 @@ func (ec *executionContext) fieldContext_Mutation_deleteCaddy(ctx context.Contex
 				return ec.fieldContext_Caddy_cost(ctx, field)
 			case "images":
 				return ec.fieldContext_Caddy_images(ctx, field)
+			case "courseGolfIDs":
+				return ec.fieldContext_Caddy_courseGolfIDs(ctx, field)
+			case "courseGolf":
+				return ec.fieldContext_Caddy_courseGolf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Caddy", field.Name)
 		},
@@ -5404,6 +5540,10 @@ func (ec *executionContext) fieldContext_Query_getCaddy(ctx context.Context, fie
 				return ec.fieldContext_Caddy_cost(ctx, field)
 			case "images":
 				return ec.fieldContext_Caddy_images(ctx, field)
+			case "courseGolfIDs":
+				return ec.fieldContext_Caddy_courseGolfIDs(ctx, field)
+			case "courseGolf":
+				return ec.fieldContext_Caddy_courseGolf(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Caddy", field.Name)
 		},
@@ -8242,7 +8382,7 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "location", "avialability", "skill", "start", "description", "time", "cost", "images", "language", "isActive"}
+	fieldsInOrder := [...]string{"id", "name", "location", "avialability", "skill", "start", "description", "time", "cost", "images", "language", "isActive", "courseGolfIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8357,6 +8497,15 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 				return it, err
 			}
 			it.IsActive = data
+		case "courseGolfIDs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("courseGolfIDs"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CourseGolfIDs = data
 		}
 	}
 
@@ -9490,6 +9639,27 @@ func (ec *executionContext) _Caddy(ctx context.Context, sel ast.SelectionSet, ob
 
 			out.Values[i] = ec._Caddy_images(ctx, field, obj)
 
+		case "courseGolfIDs":
+
+			out.Values[i] = ec._Caddy_courseGolfIDs(ctx, field, obj)
+
+		case "courseGolf":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Caddy_courseGolf(ctx, field, obj)
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -11615,6 +11785,47 @@ func (ec *executionContext) marshalOCaddy2ᚖcadigoᚑapiᚋgraphᚋmodelgraph�
 		return graphql.Null
 	}
 	return ec._Caddy(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCourseGolf2ᚕᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCourseGolf(ctx context.Context, sel ast.SelectionSet, v []*modelgraph.CourseGolf) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOCourseGolf2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCourseGolf(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
 }
 
 func (ec *executionContext) marshalOCourseGolf2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐCourseGolf(ctx context.Context, sel ast.SelectionSet, v *modelgraph.CourseGolf) graphql.Marshaler {

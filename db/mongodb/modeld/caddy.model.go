@@ -18,6 +18,7 @@ type Caddy struct {
 	Tags          []string `bson:"tags,omitempty" copier:"Tags"`
 	Images        []string `bson:"images,omitempty" copier:"Images"`
 	Cost          float64  `bson:"cost" copier:"Cost"`
+	CourseGolfIDs []string `bson:"courseGolfIDs,omitempty" copier:"CourseGolfIDs"`
 }
 
 func (this Caddy) Init() Caddy {
