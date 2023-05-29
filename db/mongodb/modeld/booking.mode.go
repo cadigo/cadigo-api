@@ -9,17 +9,17 @@ import (
 )
 
 type Booking struct {
-	BaseBSONModel
-	TimeStart  time.Time          `bson:"timeStart"`
-	TimeEnd    time.Time          `bson:"timeEnd"`
-	Reference  string             `bson:"reference"`
-	Caddy      primitive.ObjectID `bson:"caddyID"`
-	Payment    primitive.ObjectID `bson:"paymentID"`
-	Customer   primitive.ObjectID `bson:"customerID"`
-	CourseGolf primitive.ObjectID `bson:"courseGolfID"`
-	TotalNet   float64            `bson:"totalNet"`
-	Remark     string             `bson:"remark"`
-	Status     string             `bson:"status"`
+	BaseBSONModel `bson:",inline"`
+	TimeStart     time.Time          `bson:"timeStart"`
+	TimeEnd       time.Time          `bson:"timeEnd"`
+	Reference     string             `bson:"reference"`
+	Caddy         primitive.ObjectID `bson:"caddyID"`
+	Payment       primitive.ObjectID `bson:"paymentID"`
+	Customer      primitive.ObjectID `bson:"customerID"`
+	CourseGolf    primitive.ObjectID `bson:"courseGolfID"`
+	TotalNet      float64            `bson:"totalNet"`
+	Remark        string             `bson:"remark"`
+	Status        string             `bson:"status"`
 }
 
 func (this Booking) Init() Booking {

@@ -29,7 +29,11 @@ func caddyHandlerInit() *caddyhandler.Handler {
 
 	caddyRepo := caddyrepository.NewRepository(baseMongoRepo)
 	caddyServ := caddyservice.NewService(caddyRepo)
-	return caddyhandler.NewHandler(caddyServ)
+
+	courseGolfRepo := coursegolfrepository.NewRepository(baseMongoRepo)
+	courseGolfServ := coursegolfservice.NewService(courseGolfRepo)
+
+	return caddyhandler.NewHandler(caddyServ, courseGolfServ)
 }
 
 func bookingHandlerInit() *bookinghandler.Handler {

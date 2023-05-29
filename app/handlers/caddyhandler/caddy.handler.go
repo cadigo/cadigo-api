@@ -17,8 +17,8 @@ type Handler struct {
 
 func NewHandler(servCaddy caddyinterface.CaddyService, servCourseGolf coursegolfinterface.CourseGolfService) *Handler {
 	return &Handler{
-		servCaddy: servCaddy,
-		servCourseGolf: servCourseGolf
+		servCaddy:      servCaddy,
+		servCourseGolf: servCourseGolf,
 	}
 }
 
@@ -100,5 +100,7 @@ func (r *Handler) GetCaddys(ctx context.Context, input modelgraph.GetCaddysInput
 }
 
 func (r *Handler) CourseGolf(ctx context.Context, obj *modelgraph.Caddy) ([]*modelgraph.CourseGolf, error) {
+	r.servCourseGolf.GetByIDs(ctx, (obj).CourseGolfIDs)
+
 	return nil, nil
 }

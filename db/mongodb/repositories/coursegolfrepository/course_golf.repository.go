@@ -132,15 +132,10 @@ func (repo *Repository) GetByID(ctx context.Context, id string) (*modela.CourseG
 	return &c, nil
 }
 
-func (repo *Repository) GetByIDs(ctx context.Context, ids []string) (result *[]modela.CourseGolf, err error) {
-	var (
-		// err        error
-		courseGolf modeld.CourseGolf
-	)
-
+func (repo *Repository) GetByIDs(ctx context.Context, ids []*string) (*[]modela.CourseGolf, error) {
 	oids := make([]primitive.ObjectID, len(ids))
 	for i := range ids {
-		objID, err := primitive.ObjectIDFromHex(ids[i])
+		objID, err := primitive.ObjectIDFromHex(*ids[i])
 		if err == nil {
 			oids = append(oids, objID)
 		}
@@ -158,9 +153,13 @@ func (repo *Repository) GetByIDs(ctx context.Context, ids []string) (result *[]m
 		return nil, err
 	}
 
-	c := courseGolf.ToCourseGolf()
+	result := []modela.CourseGolf{}
+	for _, c := range courseGolf {
+		r := c.ToCourseGolf()
+		result = append(result, r)
+	}
 
-	return &c, nil
+	return &result, nil
 }
 
 func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination) (result []*modela.CourseGolf, total int64, err error) {

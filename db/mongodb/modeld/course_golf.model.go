@@ -6,14 +6,14 @@ import (
 )
 
 type CourseGolf struct {
-	BaseBSONModel
-	Language  string   `bson:"language" copier:"Language"`
-	Name      string   `bson:"name"`
-	Location  string   `bson:"location"`
-	Images    []string `bson:"images"`
-	Latitude  float64  `bson:"latitude" copier:"Latitude"`
-	Longitude float64  `bson:"longitude" copier:"Longitude"`
-	IsActive  bool     `bson:"isActive" copier:"IsActive"`
+	BaseBSONModel `bson:",inline"`
+	Language      string   `bson:"language" copier:"Language"`
+	Name          string   `bson:"name"`
+	Location      string   `bson:"location"`
+	Images        []string `bson:"images"`
+	Latitude      float64  `bson:"latitude" copier:"Latitude"`
+	Longitude     float64  `bson:"longitude" copier:"Longitude"`
+	IsActive      bool     `bson:"isActive" copier:"IsActive"`
 }
 
 func (this CourseGolf) Init() CourseGolf {

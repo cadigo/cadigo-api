@@ -6,7 +6,7 @@ import (
 )
 
 type Payment struct {
-	BaseBSONModel
+	BaseBSONModel      `bson:",inline"`
 	TransactionID      int    `json:"TransactionId"`
 	Amount             int    `json:"Amount"`
 	OrderNo            string `json:"OrderNo"`
