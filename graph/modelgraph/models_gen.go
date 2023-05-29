@@ -159,6 +159,11 @@ type GetMessagesInput struct {
 	FromUserID string `json:"fromUserId" copier:"FromUserId"`
 }
 
+type GetMessagesType struct {
+	Data   []*Message `json:"data" copier:"Data"`
+	RoomID string     `json:"roomId" copier:"RoomId"`
+}
+
 type GetOnlineInput struct {
 	ToUserID []string `json:"toUserId" copier:"ToUserId"`
 }
