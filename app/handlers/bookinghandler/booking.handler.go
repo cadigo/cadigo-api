@@ -8,7 +8,6 @@ import (
 	"cadigo-api/app/modela"
 	"cadigo-api/graph/modelgraph"
 	"context"
-	"fmt"
 
 	"github.com/jinzhu/copier"
 )
@@ -35,7 +34,6 @@ func NewHandler(servBooking bookinginterface.BookingService,
 // Customer is the resolver for the customer field.
 func (r *Handler) Customer(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.Customer, error) {
 	if obj != nil {
-		fmt.Println("AAAA")
 		d, err := r.servCustomer.GetByID(ctx, obj.CustomerID)
 		if err != nil {
 			return nil, nil

@@ -2,7 +2,6 @@ package modeld
 
 import (
 	"cadigo-api/app/modela"
-	"fmt"
 	"time"
 )
 
@@ -45,8 +44,6 @@ func (this Caddy) ToCaddy() modela.Caddy {
 	for _, v := range this.Time {
 		time = append(time, v)
 	}
-
-	fmt.Println(this.RawID.Hex())
 
 	return modela.Caddy{
 		ID:           this.RawID.Hex(),
