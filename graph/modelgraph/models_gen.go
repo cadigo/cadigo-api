@@ -224,6 +224,7 @@ type PaginationType struct {
 }
 
 type Payment struct {
+	ID                 string  `json:"Id" copier:")d"`
 	PayLinkID          *int    `json:"payLinkId,omitempty" copier:"PayLinkId"`
 	ProductImage       *string `json:"productImage,omitempty" copier:"ProductImage"`
 	ProductName        *string `json:"productName,omitempty" copier:"ProductName"`

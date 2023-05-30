@@ -119,7 +119,7 @@ func (r *Handler) Booking(ctx context.Context, input modelgraph.BookingInput) (b
 		return nil, err
 	}
 
-	record.PaymentID = &paymentRes.ID
+	record.PaymentID = paymentRes.ID
 
 	// Insert
 	res, err := r.servBooking.Create(ctx, &record)
@@ -136,6 +136,22 @@ func (r *Handler) Booking(ctx context.Context, input modelgraph.BookingInput) (b
 func (r *Handler) GetBooking(ctx context.Context, input modelgraph.GetBookingInput) (*modelgraph.Booking, error) {
 	if input.ID != "" {
 		r, err := r.servBooking.GetByID(ctx, input.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		g := r.ToGraph()
+
+		return &g, nil
+	} else {
+		return nil, nil
+	}
+}
+
+func (r *Handler) Payment(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.Payment, error) {
+	if obj.PaymentID != nil {
+		fmt.Println("AAA")
+		r, err := r.servPayment.GetByID(ctx, *obj.PaymentID)
 		if err != nil {
 			return nil, err
 		}
