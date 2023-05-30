@@ -31,3 +31,7 @@ func (serv *Service) Update(ctx context.Context, argID string, record *modela.Co
 func (serv *Service) GetByID(ctx context.Context, id string) (result *modela.CourseGolf, err error) {
 	return serv.repo.GetByID(ctx, id)
 }
+
+func (serv *Service) GetByIDs(ctx context.Context, ids []*string) (result *[]modela.CourseGolf, err error) {
+	return serv.repo.GetByIDs(ctx, ids)
+}

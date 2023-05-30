@@ -1,6 +1,9 @@
 package config
 
-import "cadigo-api/db/mongodb/infrastructure"
+import (
+	"cadigo-api/db/mongodb/infrastructure"
+	"cadigo-api/http/chillpayhttp"
+)
 
 type Config struct {
 	Environment string `env:"ENVIRONMENT,required"`
@@ -9,4 +12,5 @@ type Config struct {
 	RedisPass   string `env:"REDIS_PASS,required"`
 	infrastructure.MongodbConfig
 	infrastructure.MongodbRepositoryCfg
+	chillpayhttp.ChillpayConfig
 }

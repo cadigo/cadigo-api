@@ -2,7 +2,6 @@ package modeld
 
 import (
 	"cadigo-api/app/modela"
-	"fmt"
 	"time"
 )
 
@@ -19,6 +18,7 @@ type Caddy struct {
 	Tags          []string `bson:"tags,omitempty" copier:"Tags"`
 	Images        []string `bson:"images,omitempty" copier:"Images"`
 	Cost          float64  `bson:"cost" copier:"Cost"`
+	CourseGolfIDs []string `bson:"courseGolfIDs,omitempty" copier:"CourseGolfIDs"`
 }
 
 func (this Caddy) Init() Caddy {
@@ -45,8 +45,6 @@ func (this Caddy) ToCaddy() modela.Caddy {
 	for _, v := range this.Time {
 		time = append(time, v)
 	}
-
-	fmt.Println(this.RawID.Hex())
 
 	return modela.Caddy{
 		ID:           this.RawID.Hex(),

@@ -6,7 +6,7 @@ import (
 )
 
 type Users struct {
-	BaseBSONModel
+	BaseBSONModel `bson:",inline"`
 }
 
 func (this Users) Init() Users {
