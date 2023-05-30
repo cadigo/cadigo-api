@@ -29,7 +29,7 @@ FROM alpine as release
 
 WORKDIR /app
 
-RUN apk apk add tzdata && \
+RUN apk add tzdata && \
     add --no-cache ca-certificates
 
 ENV TZ=Asia/Bangkok
