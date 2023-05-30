@@ -49,6 +49,14 @@ func (this Booking) SetBooking(b modela.Booking) (*Booking, error) {
 		return nil, err
 	}
 
+	if b.PaymentID != nil {
+		paymentID, err := primitive.ObjectIDFromHex(*b.PaymentID)
+		if err != nil {
+			return nil, err
+		}
+
+		this.Payment = paymentID
+	}
 	this.Caddy = caddyID
 	this.CourseGolf = courseGolfID
 	this.Customer = customerID

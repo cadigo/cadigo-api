@@ -109,14 +109,14 @@ func NewApp() error {
 	})
 	srv.Use(extension.Introspection{})
 	r.Handle("/graphql", c.Handler(srv))
-
+	r.HandleFunc("/confirm", paymentHandler.ChillPayCallBack)
 	// http.Handle("/graphql", c.Handler(srv))
 	// http.Handle("/payment-confirm", c.Handler(srv))
 	http.Handle("/", r)
 
-	logrus.Info("connect to http://localhost:%s/ for GraphQL playground", "8080")
+	logrus.Infof("connect to http://localhost:%s/ for GraphQL playground", "8080")
 
-	logrus.Fatal(http.ListenAndServe(":8080", nil))
+	logrus.Info(http.ListenAndServe(":8080", nil))
 
 	return nil
 }

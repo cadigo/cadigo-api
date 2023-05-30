@@ -5,11 +5,15 @@ import (
 	"cadigo-api/app/interface/caddyinterface"
 	"cadigo-api/app/interface/coursegolfinterface"
 	"cadigo-api/app/interface/customerinterface"
+	"cadigo-api/app/interface/paymentinterface"
 	"cadigo-api/app/modela"
 	"cadigo-api/graph/modelgraph"
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/jinzhu/copier"
+	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
@@ -17,17 +21,20 @@ type Handler struct {
 	servCustomer   customerinterface.CustomerService
 	servCourseGolf coursegolfinterface.CourseGolfService
 	servCaddy      caddyinterface.CaddyService
+	servPayment    paymentinterface.PaymentService
 }
 
 func NewHandler(servBooking bookinginterface.BookingService,
 	servCustomer customerinterface.CustomerService,
 	servCourseGolf coursegolfinterface.CourseGolfService,
-	servCaddy caddyinterface.CaddyService) *Handler {
+	servCaddy caddyinterface.CaddyService,
+	servPayment paymentinterface.PaymentService) *Handler {
 	return &Handler{
 		servBooking:    servBooking,
 		servCustomer:   servCustomer,
 		servCourseGolf: servCourseGolf,
 		servCaddy:      servCaddy,
+		servPayment:    servPayment,
 	}
 }
 
@@ -81,17 +88,45 @@ func (r *Handler) Caddy(ctx context.Context, obj *modelgraph.Booking) (*modelgra
 
 // Booking is the resolver for the booking field.
 func (r *Handler) Booking(ctx context.Context, input modelgraph.BookingInput) (booking *modelgraph.Booking, err error) {
+	// call chillpay
+	courseGolf, err := r.servCourseGolf.GetByID(ctx, input.CourseGolfID)
+	if err != nil {
+		return nil, err
+	}
+
+	startDate := time.Now()
+	expiredDate := startDate.Add(time.Minute * 30)
+	// save payment
+	paymentReq := &modela.PaymentRequest{
+		ProductName:        courseGolf.Name,
+		ProductImage:       "",
+		ProductDescription: fmt.Sprintf("%v - %v #(%v)", input.TimeStart.Format("2006-01-02"), input.TimeEnd.Format("2006-01-02"), input.CaddyID),
+		PaymentLimit:       int(1),
+		StartDate:          startDate.Format("02/01/2006 15:04:05"),
+		ExpiredDate:        expiredDate.Format("02/01/2006 15:04:05"),
+		Currency:           "THB",
+		Amount:             int(input.TotalNet * 100),
+	}
+	paymentRes, err := r.servPayment.Create(ctx, paymentReq)
+	if err != nil {
+		logrus.Info(err)
+		return nil, fmt.Errorf("payment error")
+	}
+
 	record := modela.Booking{}
 	err = copier.CopyWithOption(&record, &input, copier.Option{IgnoreEmpty: true})
 	if err != nil {
 		return nil, err
 	}
 
+	record.PaymentID = &paymentRes.ID
+
 	// Insert
 	res, err := r.servBooking.Create(ctx, &record)
 	if err != nil {
 		return nil, err
 	}
+
 	c := res.ToGraph()
 
 	return &c, nil
@@ -99,8 +134,8 @@ func (r *Handler) Booking(ctx context.Context, input modelgraph.BookingInput) (b
 
 // GetBooking is the resolver for the getBooking field.
 func (r *Handler) GetBooking(ctx context.Context, input modelgraph.GetBookingInput) (*modelgraph.Booking, error) {
-	if input.BookingReference != nil {
-		r, err := r.servBooking.GetByID(ctx, *input.BookingReference)
+	if input.ID != "" {
+		r, err := r.servBooking.GetByID(ctx, input.ID)
 		if err != nil {
 			return nil, err
 		}

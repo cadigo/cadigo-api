@@ -7,6 +7,7 @@ package graph
 import (
 	"cadigo-api/graph/modelgraph"
 	"context"
+	"fmt"
 )
 
 // Customer is the resolver for the customer field.
@@ -22,6 +23,11 @@ func (r *bookingResolver) CourseGolf(ctx context.Context, obj *modelgraph.Bookin
 // Caddy is the resolver for the caddy field.
 func (r *bookingResolver) Caddy(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.Caddy, error) {
 	return r.BookingHandler.Caddy(ctx, obj)
+}
+
+// Payment is the resolver for the payment field.
+func (r *bookingResolver) Payment(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.Payment, error) {
+	panic(fmt.Errorf("not implemented: Payment - payment"))
 }
 
 // Booking is the resolver for the booking field.

@@ -19,12 +19,14 @@ type Booking {
   caddyID: String!
   caddy: Caddy
   totalNet: Float
+  paymentId: String
+  payment: Payment
 }
 
 # GraphQl schema Input
 # GetBookingInput
 input GetBookingInput {
-  bookingReference: String
+  id: String!
   language: LanguageEnum!
 }
 
@@ -34,6 +36,7 @@ input BookingsInput {
   language: LanguageEnum!
   pagination: PaginationInput!
   status: String
+  userId: String
 }
 
 # GraphQl schema Input
@@ -47,6 +50,7 @@ input BookingInput {
   caddyID: String!
   remark: String
   language: LanguageEnum!
+  totalNet: Float!
 }
 
 # Query

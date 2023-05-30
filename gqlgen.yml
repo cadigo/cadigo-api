@@ -79,6 +79,8 @@ models:
         resolver: true
       caddy:
         resolver: true
+      payment:
+        resolver: true
   Caddy:
     fields:
       courseGolf:

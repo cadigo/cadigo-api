@@ -21,6 +21,8 @@ type Booking struct {
 	CaddyID      string      `json:"caddyID" copier:"CaddyID"`
 	Caddy        *Caddy      `json:"caddy,omitempty" copier:"Caddy"`
 	TotalNet     *float64    `json:"totalNet,omitempty" copier:"TotalNet"`
+	PaymentID    *string     `json:"paymentId,omitempty" copier:"PaymentId"`
+	Payment      *Payment    `json:"payment,omitempty" copier:"Payment"`
 }
 
 type BookingData struct {
@@ -37,12 +39,14 @@ type BookingInput struct {
 	CaddyID      string       `json:"caddyID" copier:"CaddyID"`
 	Remark       *string      `json:"remark,omitempty" copier:"Remark"`
 	Language     LanguageEnum `json:"language" copier:"Language"`
+	TotalNet     float64      `json:"totalNet" copier:"TotalNet"`
 }
 
 type BookingsInput struct {
 	Language   LanguageEnum     `json:"language" copier:"Language"`
 	Pagination *PaginationInput `json:"pagination" copier:"Pagination"`
 	Status     *string          `json:"status,omitempty" copier:"Status"`
+	UserID     *string          `json:"userId,omitempty" copier:"UserId"`
 }
 
 type Caddy struct {
@@ -128,8 +132,8 @@ type CustomerInput struct {
 }
 
 type GetBookingInput struct {
-	BookingReference *string      `json:"bookingReference,omitempty" copier:"BookingReference"`
-	Language         LanguageEnum `json:"language" copier:"Language"`
+	ID       string       `json:"id" copier:"Id"`
+	Language LanguageEnum `json:"language" copier:"Language"`
 }
 
 type GetCaddyInput struct {
@@ -138,8 +142,13 @@ type GetCaddyInput struct {
 }
 
 type GetCaddysInput struct {
-	Language   LanguageEnum     `json:"language" copier:"Language"`
-	Pagination *PaginationInput `json:"pagination" copier:"Pagination"`
+	Language      LanguageEnum     `json:"language" copier:"Language"`
+	Pagination    *PaginationInput `json:"pagination" copier:"Pagination"`
+	Skill         []*string        `json:"skill,omitempty" copier:"Skill"`
+	CourseGolfIDs []*string        `json:"courseGolfIDs,omitempty" copier:"CourseGolfIDs"`
+	Cost          *float64         `json:"cost,omitempty" copier:"Cost"`
+	Start         *int             `json:"start,omitempty" copier:"Start"`
+	Ids           []*string        `json:"ids,omitempty" copier:"Ids"`
 }
 
 type GetCourseGolfInput struct {
@@ -204,7 +213,7 @@ type PaginationInput struct {
 	Limit    int           `json:"limit" copier:"Limit"`
 	OrderBy  *string       `json:"orderBy,omitempty" copier:"OrderBy"`
 	Asc      *bool         `json:"asc,omitempty" copier:"Asc"`
-	Leyword  []*string     `json:"leyword,omitempty" copier:"Leyword"`
+	Keyword  []*string     `json:"keyword,omitempty" copier:"Keyword"`
 	Language *LanguageEnum `json:"language,omitempty" copier:"Language"`
 }
 
@@ -215,41 +224,20 @@ type PaginationType struct {
 }
 
 type Payment struct {
-	ID                 *string `json:"id,omitempty" copier:"Id"`
-	TransactionID      *int    `json:"transactionId,omitempty" copier:"TransactionId"`
+	PayLinkID          *int    `json:"payLinkId,omitempty" copier:"PayLinkId"`
+	ProductImage       *string `json:"productImage,omitempty" copier:"ProductImage"`
+	ProductName        *string `json:"productName,omitempty" copier:"ProductName"`
+	ProductDescription *string `json:"productDescription,omitempty" copier:"ProductDescription"`
 	Amount             *int    `json:"amount,omitempty" copier:"Amount"`
-	OrderNo            *string `json:"orderNo,omitempty" copier:"OrderNo"`
-	CustomerID         *string `json:"customerId,omitempty" copier:"CustomerId"`
-	BankCode           *string `json:"bankCode,omitempty" copier:"BankCode"`
-	PaymentDate        *string `json:"paymentDate,omitempty" copier:"PaymentDate"`
-	PaymentStatus      *int    `json:"paymentStatus,omitempty" copier:"PaymentStatus"`
-	BankRefCode        *string `json:"bankRefCode,omitempty" copier:"BankRefCode"`
-	CurrentDate        *string `json:"currentDate,omitempty" copier:"CurrentDate"`
-	CurrentTime        *string `json:"currentTime,omitempty" copier:"CurrentTime"`
-	PaymentDescription *string `json:"paymentDescription,omitempty" copier:"PaymentDescription"`
-	CreditCardToken    *string `json:"creditCardToken,omitempty" copier:"CreditCardToken"`
 	Currency           *string `json:"currency,omitempty" copier:"Currency"`
-	CustomerName       *string `json:"customerName,omitempty" copier:"CustomerName"`
-	CheckSum           *string `json:"checkSum,omitempty" copier:"CheckSum"`
-}
-
-type PaymentInput struct {
-	ID                 *string `json:"id,omitempty" copier:"Id"`
-	TransactionID      int     `json:"transactionId" copier:"TransactionId"`
-	Amount             int     `json:"amount" copier:"Amount"`
-	OrderNo            string  `json:"orderNo" copier:"OrderNo"`
-	CustomerID         string  `json:"customerId" copier:"CustomerId"`
-	BankCode           string  `json:"bankCode" copier:"BankCode"`
-	PaymentDate        string  `json:"paymentDate" copier:"PaymentDate"`
-	PaymentStatus      int     `json:"paymentStatus" copier:"PaymentStatus"`
-	BankRefCode        string  `json:"bankRefCode" copier:"BankRefCode"`
-	CurrentDate        string  `json:"currentDate" copier:"CurrentDate"`
-	CurrentTime        string  `json:"currentTime" copier:"CurrentTime"`
-	PaymentDescription string  `json:"paymentDescription" copier:"PaymentDescription"`
-	CreditCardToken    string  `json:"creditCardToken" copier:"CreditCardToken"`
-	Currency           string  `json:"currency" copier:"Currency"`
-	CustomerName       string  `json:"customerName" copier:"CustomerName"`
-	CheckSum           string  `json:"checkSum" copier:"CheckSum"`
+	CreatedDate        *string `json:"createdDate,omitempty" copier:"CreatedDate"`
+	StartDate          *string `json:"startDate,omitempty" copier:"StartDate"`
+	ExpiredDate        *string `json:"expiredDate,omitempty" copier:"ExpiredDate"`
+	PaymentLimit       *int    `json:"paymentLimit,omitempty" copier:"PaymentLimit"`
+	Status             *string `json:"status,omitempty" copier:"Status"`
+	PayLinkToken       *string `json:"payLinkToken,omitempty" copier:"PayLinkToken"`
+	PaymentURL         *string `json:"paymentUrl,omitempty" copier:"PaymentUrl"`
+	QRImage            *string `json:"qrImage,omitempty" copier:"QrImage"`
 }
 
 type PostMessageInput struct {

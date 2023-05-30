@@ -7,21 +7,20 @@ import (
 
 type Payment struct {
 	BaseBSONModel      `bson:",inline"`
-	TransactionID      int    `json:"TransactionId"`
-	Amount             int    `json:"Amount"`
-	OrderNo            string `json:"OrderNo"`
-	PaymentID          string `json:"PaymentId"`
-	BankCode           string `json:"BankCode"`
-	PaymentDate        string `json:"PaymentDate"`
-	PaymentStatus      int    `json:"PaymentStatus"`
-	BankRefCode        string `json:"BankRefCode"`
-	CurrentDate        string `json:"CurrentDate"`
-	CurrentTime        string `json:"CurrentTime"`
-	PaymentDescription string `json:"PaymentDescription"`
-	CreditCardToken    string `json:"CreditCardToken"`
-	Currency           string `json:"Currency"`
-	PaymentName        string `json:"PaymentName"`
-	CheckSum           string `json:"CheckSum"`
+	PayLinkID          int     `bson:"payLinkId"`
+	ProductImage       string  `bson:"productImage"`
+	ProductName        string  `bson:"productName"`
+	ProductDescription string  `bson:"productDescription"`
+	Amount             float64 `bson:"amount"`
+	Currency           string  `bson:"currency"`
+	CreatedDate        string  `bson:"createdDate"`
+	StartDate          string  `bson:"startDate"`
+	ExpiredDate        string  `bson:"expiredDate"`
+	PaymentLimit       int     `bson:"paymentLimit"`
+	Status             string  `bson:"status"`
+	PayLinkToken       string  `bson:"payLinkToken"`
+	PaymentURL         string  `bson:"paymentUrl"`
+	QrImage            string  `bson:"qrImage"`
 }
 
 func (this Payment) Init() Payment {
@@ -40,21 +39,19 @@ func (this Payment) Update() Payment {
 func (this Payment) ToPayment() modela.Payment {
 	return modela.Payment{
 		ID:                 this.RawID.Hex(),
-		TransactionID:      &this.TransactionID,
-		Amount:             &this.Amount,
-		OrderNo:            &this.OrderNo,
-		BankCode:           &this.BankCode,
-		PaymentDate:        &this.PaymentDate,
-		PaymentStatus:      &this.PaymentStatus,
-		BankRefCode:        &this.BankRefCode,
-		CurrentDate:        &this.Currency,
-		CurrentTime:        &this.CurrentTime,
-		PaymentDescription: &this.PaymentDescription,
-		CreditCardToken:    &this.CreditCardToken,
-		Currency:           &this.Currency,
-		CheckSum:           &this.CheckSum,
-		// CustomerName: this.Cu,
-		// CustomerID: this.cu,
-		// CustomerID: ,
+		PayLinkID:          this.PayLinkID,
+		ProductImage:       this.ProductImage,
+		ProductName:        this.ProductName,
+		ProductDescription: this.ProductDescription,
+		Amount:             this.Amount,
+		Currency:           this.Currency,
+		CreatedDate:        this.CreatedDate,
+		StartDate:          this.StartDate,
+		ExpiredDate:        this.ExpiredDate,
+		PaymentLimit:       this.PaymentLimit,
+		Status:             this.Status,
+		PayLinkToken:       this.PayLinkToken,
+		PaymentURL:         this.PaymentURL,
+		QrImage:            this.QrImage,
 	}
 }
