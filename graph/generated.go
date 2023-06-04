@@ -82,7 +82,7 @@ type ComplexityRoot struct {
 		Location      func(childComplexity int) int
 		Name          func(childComplexity int) int
 		Skill         func(childComplexity int) int
-		Start         func(childComplexity int) int
+		Star          func(childComplexity int) int
 		Time          func(childComplexity int) int
 	}
 
@@ -423,12 +423,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Caddy.Skill(childComplexity), true
 
-	case "Caddy.start":
-		if e.complexity.Caddy.Start == nil {
+	case "Caddy.star":
+		if e.complexity.Caddy.Star == nil {
 			break
 		}
 
-		return e.complexity.Caddy.Start(childComplexity), true
+		return e.complexity.Caddy.Star(childComplexity), true
 
 	case "Caddy.time":
 		if e.complexity.Caddy.Time == nil {
@@ -1974,8 +1974,8 @@ func (ec *executionContext) fieldContext_Booking_caddy(ctx context.Context, fiel
 				return ec.fieldContext_Caddy_avialability(ctx, field)
 			case "skill":
 				return ec.fieldContext_Caddy_skill(ctx, field)
-			case "start":
-				return ec.fieldContext_Caddy_start(ctx, field)
+			case "star":
+				return ec.fieldContext_Caddy_star(ctx, field)
 			case "description":
 				return ec.fieldContext_Caddy_description(ctx, field)
 			case "time":
@@ -2479,8 +2479,8 @@ func (ec *executionContext) fieldContext_Caddy_skill(ctx context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Caddy_start(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Caddy) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Caddy_start(ctx, field)
+func (ec *executionContext) _Caddy_star(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Caddy) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Caddy_star(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2493,7 +2493,7 @@ func (ec *executionContext) _Caddy_start(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Start, nil
+		return obj.Star, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2507,7 +2507,7 @@ func (ec *executionContext) _Caddy_start(ctx context.Context, field graphql.Coll
 	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Caddy_start(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Caddy_star(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Caddy",
 		Field:      field,
@@ -2833,8 +2833,8 @@ func (ec *executionContext) fieldContext_CaddyData_data(ctx context.Context, fie
 				return ec.fieldContext_Caddy_avialability(ctx, field)
 			case "skill":
 				return ec.fieldContext_Caddy_skill(ctx, field)
-			case "start":
-				return ec.fieldContext_Caddy_start(ctx, field)
+			case "star":
+				return ec.fieldContext_Caddy_star(ctx, field)
 			case "description":
 				return ec.fieldContext_Caddy_description(ctx, field)
 			case "time":
@@ -3985,8 +3985,8 @@ func (ec *executionContext) fieldContext_Mutation_caddy(ctx context.Context, fie
 				return ec.fieldContext_Caddy_avialability(ctx, field)
 			case "skill":
 				return ec.fieldContext_Caddy_skill(ctx, field)
-			case "start":
-				return ec.fieldContext_Caddy_start(ctx, field)
+			case "star":
+				return ec.fieldContext_Caddy_star(ctx, field)
 			case "description":
 				return ec.fieldContext_Caddy_description(ctx, field)
 			case "time":
@@ -4066,8 +4066,8 @@ func (ec *executionContext) fieldContext_Mutation_deleteCaddy(ctx context.Contex
 				return ec.fieldContext_Caddy_avialability(ctx, field)
 			case "skill":
 				return ec.fieldContext_Caddy_skill(ctx, field)
-			case "start":
-				return ec.fieldContext_Caddy_start(ctx, field)
+			case "star":
+				return ec.fieldContext_Caddy_star(ctx, field)
 			case "description":
 				return ec.fieldContext_Caddy_description(ctx, field)
 			case "time":
@@ -5509,8 +5509,8 @@ func (ec *executionContext) fieldContext_Query_getCaddy(ctx context.Context, fie
 				return ec.fieldContext_Caddy_avialability(ctx, field)
 			case "skill":
 				return ec.fieldContext_Caddy_skill(ctx, field)
-			case "start":
-				return ec.fieldContext_Caddy_start(ctx, field)
+			case "star":
+				return ec.fieldContext_Caddy_star(ctx, field)
 			case "description":
 				return ec.fieldContext_Caddy_description(ctx, field)
 			case "time":
@@ -8377,7 +8377,7 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "name", "location", "avialability", "skill", "start", "description", "time", "cost", "images", "language", "isActive", "courseGolfIDs"}
+	fieldsInOrder := [...]string{"id", "reference", "name", "location", "avialability", "skill", "star", "description", "time", "cost", "images", "language", "isActive", "courseGolfIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8393,6 +8393,15 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 				return it, err
 			}
 			it.ID = data
+		case "reference":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reference"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Reference = data
 		case "name":
 			var err error
 
@@ -8429,15 +8438,15 @@ func (ec *executionContext) unmarshalInputCaddyInput(ctx context.Context, obj in
 				return it, err
 			}
 			it.Skill = data
-		case "start":
+		case "star":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("start"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("star"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Start = data
+			it.Star = data
 		case "description":
 			var err error
 
@@ -8776,7 +8785,7 @@ func (ec *executionContext) unmarshalInputGetCaddysInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"language", "pagination", "skill", "courseGolfIDs", "cost", "start", "ids"}
+	fieldsInOrder := [...]string{"language", "pagination", "skill", "courseGolfIDs", "cost", "star", "ids"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8828,15 +8837,15 @@ func (ec *executionContext) unmarshalInputGetCaddysInput(ctx context.Context, ob
 				return it, err
 			}
 			it.Cost = data
-		case "start":
+		case "star":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("start"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("star"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Start = data
+			it.Star = data
 		case "ids":
 			var err error
 
@@ -9516,9 +9525,9 @@ func (ec *executionContext) _Caddy(ctx context.Context, sel ast.SelectionSet, ob
 
 			out.Values[i] = ec._Caddy_skill(ctx, field, obj)
 
-		case "start":
+		case "star":
 
-			out.Values[i] = ec._Caddy_start(ctx, field, obj)
+			out.Values[i] = ec._Caddy_star(ctx, field, obj)
 
 		case "description":
 

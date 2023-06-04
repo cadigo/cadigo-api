@@ -132,7 +132,7 @@ func (repo *Repository) GetByID(ctx context.Context, id string) (*modela.Caddy, 
 	return &c, nil
 }
 
-func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination) (result []*modela.Caddy, total int64, err error) {
+func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination, filter modela.CaddyFilter) (result []*modela.Caddy, total int64, err error) {
 	query := bson.M{}
 	opts := options.Find().
 		SetSort(bson.M{pagination.OrderBy: 1}).
@@ -143,6 +143,36 @@ func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination
 	total, err = collection.CountDocuments(ctx, query)
 	if err != nil {
 		return result, total, err
+	}
+
+	if filter.Cost != nil {
+		query["cost"] = bson.M{"$eq": *filter.Cost}
+	}
+
+	if filter.Star != nil {
+		query["star"] = bson.M{"$eq": *filter.Star}
+	}
+
+	if len(filter.CourseGolfIDs) > 0 {
+		query["courseGolfIDs"] = bson.M{"$in": filter.CourseGolfIDs}
+	}
+
+	if len(filter.Skill) > 0 {
+		query["skill"] = bson.M{"$in": filter.Skill}
+	}
+
+	if len(filter.Ids) > 0 {
+		docIds := make([]primitive.ObjectID, len(filter.Ids))
+
+		for _, id := range filter.Ids {
+			docID, err := primitive.ObjectIDFromHex(id)
+			if err != nil {
+				continue
+			}
+			docIds = append(docIds, docID)
+		}
+
+		query["_id"] = bson.M{"$in": docIds}
 	}
 
 	curs, err := collection.Find(ctx, query, opts)

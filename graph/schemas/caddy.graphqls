@@ -13,7 +13,7 @@ type Caddy {
   location: String
   avialability: String
   skill: [String]
-  start: Int
+  star: Int
   description: String
   time: [String]
   cost: Float
@@ -37,7 +37,7 @@ input GetCaddysInput {
   skill: [String]
   courseGolfIDs: [String]
   cost: Float
-  start: Int
+  star: Int
   ids: [String]
 }
 
@@ -45,11 +45,12 @@ input GetCaddysInput {
 # CaddyInput
 input CaddyInput {
   id: String
+  reference: String
   name: String!
   location: String!
   avialability: String!
   skill: [String!]
-  start: Int!
+  star: Int!
   description: String
   time: [String!]
   cost: Float!
