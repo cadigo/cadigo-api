@@ -6,10 +6,10 @@ import (
 )
 
 type Customer struct {
-	BaseBSONModel
-	UserID string   `bson:"userID" copier:"UserID"`
-	Name   string   `bson:"name" copier:"Name"`
-	Images []string `bson:"images" copier:"Images"`
+	BaseBSONModel `bson:",inline"`
+	UserID        string   `bson:"userID" copier:"UserID"`
+	Name          string   `bson:"name" copier:"Name"`
+	Images        []string `bson:"images" copier:"Images"`
 }
 
 func (this Customer) Init() Customer {

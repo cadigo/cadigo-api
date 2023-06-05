@@ -3,13 +3,12 @@ package infrastructure
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"log"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -41,8 +40,6 @@ type mongodbConnector struct {
 }
 
 func NewMongodbConnector(cfg *MongodbConfig) (MongodbConnector, error) {
-	b, _ := json.Marshal(cfg)
-	fmt.Println(string(b))
 	mongodbConnector := &mongodbConnector{
 		cfg: cfg,
 	}
@@ -63,10 +60,9 @@ func (this *mongodbConnector) connect() error {
 
 	connectOnce.Do(func() {
 		connStr := getConnectionString(this.cfg)
-		fmt.Println(this.cfg)
 		client, err = mongo.NewClient(options.Client().ApplyURI(connStr))
 		if err != nil {
-			log.Fatalf("Failed to connect to database: %s", this.cfg.DatabaseName)
+			logrus.Fatalf("Failed to connect to database: %s", this.cfg.DatabaseName)
 			return
 		}
 
@@ -74,7 +70,7 @@ func (this *mongodbConnector) connect() error {
 		defer cancel()
 		err = client.Connect(ctx)
 		if err != nil {
-			log.Fatalf("Failed to connect to database: %s", this.cfg.DatabaseName)
+			logrus.Fatalf("Failed to connect to database: %s", this.cfg.DatabaseName)
 			return
 		}
 	})
@@ -118,14 +114,14 @@ func (this *mongodbConnector) EnsureIndex(collection *mongo.Collection, indexMap
 			_, err := indexView.CreateOne(context.Background(), indexModel)
 
 			if err != nil {
-				log.Fatalf("fail to create %s", k)
+				logrus.Fatalf("fail to create %s", k)
 			}
 		} else {
 			keys := bsonx.Doc{{Key: k, Value: bsonx.Int32(int32(1))}}
 			indexModel := mongo.IndexModel{Keys: keys, Options: index}
 			_, err := indexView.CreateOne(context.Background(), indexModel)
 			if err != nil {
-				log.Fatalf("fail to create %s", k)
+				logrus.Fatalf("fail to create %s", k)
 			}
 		}
 	}

@@ -128,7 +128,12 @@ func (repo *Repository) GetByID(ctx context.Context, id string) (result *modela.
 	)
 
 	collection := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
-	err = collection.FindOne(ctx, bson.M{"_id": id}).Decode(&booking)
+	docID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&booking)
 	if err != nil {
 		return nil, err
 	}

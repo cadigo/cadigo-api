@@ -24,6 +24,11 @@ func (r *bookingResolver) Caddy(ctx context.Context, obj *modelgraph.Booking) (*
 	return r.BookingHandler.Caddy(ctx, obj)
 }
 
+// Payment is the resolver for the payment field.
+func (r *bookingResolver) Payment(ctx context.Context, obj *modelgraph.Booking) (*modelgraph.Payment, error) {
+	return r.BookingHandler.Payment(ctx, obj)
+}
+
 // Booking is the resolver for the booking field.
 func (r *mutationResolver) Booking(ctx context.Context, input modelgraph.BookingInput) (*modelgraph.Booking, error) {
 	return r.BookingHandler.Booking(ctx, input)

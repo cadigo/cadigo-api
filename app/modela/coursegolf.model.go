@@ -24,5 +24,6 @@ func (this CourseGolf) Parse(graph modelgraph.CourseGolfInput) error {
 func (this CourseGolf) ToGraph() modelgraph.CourseGolf {
 	g := modelgraph.CourseGolf{}
 	copier.Copy(&g, &this)
+	this.ID = g.ID
 	return g
 }

@@ -29,7 +29,8 @@ FROM alpine as release
 
 WORKDIR /app
 
-RUN apk add --no-cache ca-certificates
+RUN apk update && apk upgrade && \
+    apk add tzdata
 
 ENV TZ=Asia/Bangkok
 
@@ -37,4 +38,4 @@ COPY --from=builder ./app/goapp ./goapp
 
 EXPOSE 8080
 
-CMD ["./app/goapp"]
+CMD ["./goapp"]

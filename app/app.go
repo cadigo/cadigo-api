@@ -1,6 +1,7 @@
 package app
 
 import (
+	"cadigo-api/app/handlers/paymenthandler"
 	"cadigo-api/config"
 	"cadigo-api/db/mongodb/infrastructure"
 	"cadigo-api/graph"
@@ -14,30 +15,33 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/caarlos0/env/v8"
+	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
+	"github.com/sirupsen/logrus"
 )
 
 const defaultPort = "8080"
 
 var mongodbConnector infrastructure.MongodbConnector
 var generalConfig config.Config
+var paymentHandler *paymenthandler.Handler
 
 func graphqlHandler() *handler.Server {
 	caddyHandler := caddyHandlerInit()
-	bookinghandler := bookingHandlerInit()
-	coursegolfhandler := courseGolfHandlerInit()
+	bookingHandler := bookingHandlerInit()
+	coursegolfHandler := courseGolfHandlerInit()
 	customerhandler := customerHandlerInit()
-	paymenthandler := paymentHandlerInit()
+	paymentHandler = paymentHandlerInit()
 	chatHandler := chatHandlerInit()
 
 	h := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		CaddyHandler:      caddyHandler,
-		BookingHandler:    bookinghandler,
-		CoursegolfHandler: coursegolfhandler,
+		BookingHandler:    bookingHandler,
+		CoursegolfHandler: coursegolfHandler,
 		CustomerHandler:   customerhandler,
-		PaymentHandler:    paymenthandler,
+		PaymentHandler:    paymentHandler,
 		ChatHandler:       chatHandler,
 	}}))
 
@@ -87,12 +91,11 @@ func NewApp() error {
 		Debug:            false,
 	})
 
-	// r := mux.NewRouter()
+	r := mux.NewRouter()
 
-	// r.Handle("/", playgroundHandler("/graphql"))
-	// r.Handle("/graphql", c.Handler(graphqlHandler()))
+	r.Handle("/", playgroundHandler("/graphql"))
 
-	http.Handle("/", playgroundHandler("/graphql"))
+	// http.Handle("/", playgroundHandler("/graphql"))
 
 	srv := graphqlHandler()
 	srv.AddTransport(transport.POST{})
@@ -105,11 +108,15 @@ func NewApp() error {
 		},
 	})
 	srv.Use(extension.Introspection{})
-	http.Handle("/graphql", c.Handler(srv))
+	r.Handle("/graphql", c.Handler(srv))
+	r.HandleFunc("/confirm", paymentHandler.ChillPayCallBack)
+	// http.Handle("/graphql", c.Handler(srv))
+	// http.Handle("/payment-confirm", c.Handler(srv))
+	http.Handle("/", r)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", "8080")
+	logrus.Infof("connect to http://localhost:%s/ for GraphQL playground", "8080")
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	logrus.Info(http.ListenAndServe(":8080", nil))
 
 	return nil
 }

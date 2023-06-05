@@ -7,14 +7,10 @@ package graph
 import (
 	"cadigo-api/graph/modelgraph"
 	"context"
+	"fmt"
 )
-
-// Payment is the resolver for the payment field.
-func (r *mutationResolver) Payment(ctx context.Context, input modelgraph.PaymentInput) (*modelgraph.Payment, error) {
-	return r.PaymentHandler.Payment(ctx, input)
-}
 
 // GetPayment is the resolver for the getPayment field.
 func (r *queryResolver) GetPayment(ctx context.Context, input modelgraph.GetPaymentInput) (*modelgraph.Payment, error) {
-	return r.PaymentHandler.GetPayment(ctx, input)
+	panic(fmt.Errorf("not implemented: GetPayment - getPayment"))
 }

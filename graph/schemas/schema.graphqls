@@ -23,6 +23,6 @@ input PaginationInput {
   limit: Int!
   orderBy: String
   asc: Boolean
-  leyword: [String]
+  keyword: [String]
   language: LanguageEnum
 }

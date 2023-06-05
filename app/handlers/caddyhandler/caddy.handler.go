@@ -2,6 +2,7 @@ package caddyhandler
 
 import (
 	"cadigo-api/app/interface/caddyinterface"
+	"cadigo-api/app/interface/coursegolfinterface"
 	"cadigo-api/app/modela"
 	"cadigo-api/graph/modelgraph"
 	"context"
@@ -10,12 +11,14 @@ import (
 )
 
 type Handler struct {
-	servCaddy caddyinterface.CaddyService
+	servCaddy      caddyinterface.CaddyService
+	servCourseGolf coursegolfinterface.CourseGolfService
 }
 
-func NewHandler(servCaddy caddyinterface.CaddyService) *Handler {
+func NewHandler(servCaddy caddyinterface.CaddyService, servCourseGolf coursegolfinterface.CourseGolfService) *Handler {
 	return &Handler{
-		servCaddy: servCaddy,
+		servCaddy:      servCaddy,
+		servCourseGolf: servCourseGolf,
 	}
 }
 
@@ -73,7 +76,13 @@ func (r *Handler) GetCaddys(ctx context.Context, input modelgraph.GetCaddysInput
 		return nil, err
 	}
 
-	res, total, err := r.servCaddy.GetAll(ctx, defaultPagination)
+	defaultFilter := new(modela.CaddyFilter).Init()
+	err = copier.Copy(&defaultFilter, &input)
+	if err != nil {
+		return nil, err
+	}
+
+	res, total, err := r.servCaddy.GetAll(ctx, defaultPagination, defaultFilter)
 	if err != nil {
 		return nil, err
 	}
@@ -94,4 +103,10 @@ func (r *Handler) GetCaddys(ctx context.Context, input modelgraph.GetCaddysInput
 	}
 
 	return data, nil
+}
+
+func (r *Handler) CourseGolf(ctx context.Context, obj *modelgraph.Caddy) ([]*modelgraph.CourseGolf, error) {
+	r.servCourseGolf.GetByIDs(ctx, (obj).CourseGolfIDs)
+
+	return nil, nil
 }

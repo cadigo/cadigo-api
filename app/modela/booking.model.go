@@ -16,6 +16,7 @@ type Booking struct {
 	CourseGolfID string    `json:"courseGolfID" copier:"CourseGolfID"`
 	CaddyID      string    `json:"caddyID" copier:"CaddyID"`
 	TotalNet     *float64  `json:"totalNet,omitempty" copier:"TotalNet"`
+	PaymentID    string    `json:"paymentId,omitempty" copier:"PaymentId"`
 }
 
 func (this Booking) Parse(graph modelgraph.BookingInput) error {

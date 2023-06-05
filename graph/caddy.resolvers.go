@@ -10,6 +10,11 @@ import (
 	"fmt"
 )
 
+// CourseGolf is the resolver for the courseGolf field.
+func (r *caddyResolver) CourseGolf(ctx context.Context, obj *modelgraph.Caddy) ([]*modelgraph.CourseGolf, error) {
+	return r.CaddyHandler.CourseGolf(ctx, obj)
+}
+
 // Caddy is the resolver for the Caddy field.
 func (r *mutationResolver) Caddy(ctx context.Context, input modelgraph.CaddyInput) (*modelgraph.Caddy, error) {
 	return r.CaddyHandler.Caddy(ctx, input)
@@ -29,3 +34,8 @@ func (r *queryResolver) GetCaddy(ctx context.Context, input modelgraph.GetCaddyI
 func (r *queryResolver) GetCaddys(ctx context.Context, input modelgraph.GetCaddysInput) (*modelgraph.CaddyData, error) {
 	return r.CaddyHandler.GetCaddys(ctx, input)
 }
+
+// Caddy returns CaddyResolver implementation.
+func (r *Resolver) Caddy() CaddyResolver { return &caddyResolver{r} }
+
+type caddyResolver struct{ *Resolver }

@@ -10,28 +10,28 @@ import (
 )
 
 // PostMessage is the resolver for the postMessage field.
-func (r *mutationResolver) PostMessage(ctx context.Context, user string, text string) (*modelgraph.Message, error) {
-	return r.ChatHandler.PostMessage(ctx, user, text)
+func (r *mutationResolver) PostMessage(ctx context.Context, inpuy *modelgraph.PostMessageInput) (*modelgraph.Message, error) {
+	return r.ChatHandler.PostMessage(ctx, inpuy)
 }
 
-// Messages is the resolver for the messages field.
-func (r *queryResolver) Messages(ctx context.Context) ([]*modelgraph.Message, error) {
-	return r.ChatHandler.Messages(ctx)
+// GetMessages is the resolver for the getMessages field.
+func (r *queryResolver) GetMessages(ctx context.Context, input modelgraph.GetMessagesInput) (*modelgraph.GetMessagesType, error) {
+	return r.ChatHandler.GetMessages(ctx, input)
 }
 
-// Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context) ([]string, error) {
-	return r.ChatHandler.Users(ctx)
+// GetOnline is the resolver for the getOnline field.
+func (r *queryResolver) GetOnline(ctx context.Context, input modelgraph.GetOnlineInput) ([]*modelgraph.Online, error) {
+	return r.ChatHandler.GetOnline(ctx, input)
 }
 
-// MessagePosted is the resolver for the messagePosted field.
-func (r *subscriptionResolver) MessagePosted(ctx context.Context, user string) (<-chan *modelgraph.Message, error) {
-	return r.ChatHandler.MessagePosted(ctx, user)
+// Chat is the resolver for the chat field.
+func (r *subscriptionResolver) Chat(ctx context.Context, input modelgraph.ChatInput) (<-chan *modelgraph.Message, error) {
+	return r.ChatHandler.SubscriptionChat(ctx, input)
 }
 
-// UserJoined is the resolver for the userJoined field.
-func (r *subscriptionResolver) UserJoined(ctx context.Context, user string) (<-chan string, error) {
-	return r.ChatHandler.UserJoined(ctx, user)
+// Online is the resolver for the online field.
+func (r *subscriptionResolver) Online(ctx context.Context, input modelgraph.OnlineInput) (<-chan string, error) {
+	return r.ChatHandler.SubscriptionOnline(ctx, input)
 }
 
 // Subscription returns SubscriptionResolver implementation.

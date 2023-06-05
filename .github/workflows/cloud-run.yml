@@ -65,3 +65,7 @@ jobs:
             CUSTOM_ID_PREFIX=${{ secrets.CUSTOM_ID_PREFIX }}
             REDIS_ADDR=${{ secrets.REDIS_ADDR }}
             REDIS_PASS=${{ secrets.REDIS_PASS }}
+            CHILLPAY_MD5=${{ secrets.CHILLPAY_MD5 }}
+            CHILLPAY_MERCHANTCODE=${{ secrets.CHILLPAY_MERCHANTCODE }}
+            CHILLPAY_APIKEY=${{ secrets.CHILLPAY_APIKEY }}
+            CHILLPAY_URL=${{ secrets.CHILLPAY_URL }}

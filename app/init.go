@@ -18,6 +18,7 @@ import (
 	"cadigo-api/db/mongodb/repositories/coursegolfrepository"
 	"cadigo-api/db/mongodb/repositories/customerrepository"
 	"cadigo-api/db/mongodb/repositories/paymentrepository"
+	"cadigo-api/http/chillpayhttp"
 )
 
 func caddyHandlerInit() *caddyhandler.Handler {
@@ -29,7 +30,11 @@ func caddyHandlerInit() *caddyhandler.Handler {
 
 	caddyRepo := caddyrepository.NewRepository(baseMongoRepo)
 	caddyServ := caddyservice.NewService(caddyRepo)
-	return caddyhandler.NewHandler(caddyServ)
+
+	courseGolfRepo := coursegolfrepository.NewRepository(baseMongoRepo)
+	courseGolfServ := coursegolfservice.NewService(courseGolfRepo)
+
+	return caddyhandler.NewHandler(caddyServ, courseGolfServ)
 }
 
 func bookingHandlerInit() *bookinghandler.Handler {
@@ -51,7 +56,11 @@ func bookingHandlerInit() *bookinghandler.Handler {
 	caddyRepo := caddyrepository.NewRepository(baseMongoRepo)
 	caddyServ := caddyservice.NewService(caddyRepo)
 
-	return bookinghandler.NewHandler(bookingServ, customerServ, courseGolfServ, caddyServ)
+	paymentRepo := paymentrepository.NewRepository(baseMongoRepo)
+	paymentHttp := chillpayhttp.NewChillpayHTTP(generalConfig.ChillpayConfig)
+	paymentServ := paymentservice.NewService(paymentRepo, paymentHttp)
+
+	return bookinghandler.NewHandler(bookingServ, customerServ, courseGolfServ, caddyServ, paymentServ)
 }
 
 func courseGolfHandlerInit() *coursegolfhandler.Handler {
@@ -86,7 +95,8 @@ func paymentHandlerInit() *paymenthandler.Handler {
 	baseMongoRepo := injectors.ProvideBaseMongoRepo(&generalConfig, mongodbConnector)
 
 	paymentRepo := paymentrepository.NewRepository(baseMongoRepo)
-	paymentServ := paymentservice.NewService(paymentRepo)
+	paymentHttp := chillpayhttp.NewChillpayHTTP(generalConfig.ChillpayConfig)
+	paymentServ := paymentservice.NewService(paymentRepo, paymentHttp)
 	return paymenthandler.NewHandler(paymentServ)
 }
 
