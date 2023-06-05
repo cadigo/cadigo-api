@@ -36,6 +36,7 @@ type CaddyFilter struct {
 	Cost          *float64 `json:"cost,omitempty" copier:"Cost"`
 	Star          *int     `json:"star,omitempty" copier:"Star"`
 	Ids           []string `json:"ids,omitempty" copier:"Ids"`
+	Reference     *string  `json:"reference,omitempty" copier:"Reference"`
 }
 
 func (this CaddyFilter) Init() CaddyFilter {

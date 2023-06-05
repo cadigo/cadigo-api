@@ -138,8 +138,9 @@ type GetBookingInput struct {
 }
 
 type GetCaddyInput struct {
-	Language LanguageEnum `json:"language" copier:"Language"`
-	ID       *string      `json:"id,omitempty" copier:"Id"`
+	Language  LanguageEnum `json:"language" copier:"Language"`
+	ID        *string      `json:"id,omitempty" copier:"Id"`
+	Reference *string      `json:"reference,omitempty" copier:"Reference"`
 }
 
 type GetCaddysInput struct {
@@ -150,6 +151,7 @@ type GetCaddysInput struct {
 	Cost          *float64         `json:"cost,omitempty" copier:"Cost"`
 	Star          *int             `json:"star,omitempty" copier:"Star"`
 	Ids           []*string        `json:"ids,omitempty" copier:"Ids"`
+	Reference     *string          `json:"reference,omitempty" copier:"Reference"`
 }
 
 type GetCourseGolfInput struct {

@@ -27,6 +27,7 @@ type Caddy {
 input GetCaddyInput {
   language: LanguageEnum!
   id: String
+  reference: String
 }
 
 # GraphQl schema Input
@@ -39,6 +40,7 @@ input GetCaddysInput {
   cost: Float
   star: Int
   ids: [String]
+  reference: String
 }
 
 # GraphQl schema Input

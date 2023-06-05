@@ -8747,7 +8747,7 @@ func (ec *executionContext) unmarshalInputGetCaddyInput(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"language", "id"}
+	fieldsInOrder := [...]string{"language", "id", "reference"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8772,6 +8772,15 @@ func (ec *executionContext) unmarshalInputGetCaddyInput(ctx context.Context, obj
 				return it, err
 			}
 			it.ID = data
+		case "reference":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reference"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Reference = data
 		}
 	}
 
@@ -8785,7 +8794,7 @@ func (ec *executionContext) unmarshalInputGetCaddysInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"language", "pagination", "skill", "courseGolfIDs", "cost", "star", "ids"}
+	fieldsInOrder := [...]string{"language", "pagination", "skill", "courseGolfIDs", "cost", "star", "ids", "reference"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -8855,6 +8864,15 @@ func (ec *executionContext) unmarshalInputGetCaddysInput(ctx context.Context, ob
 				return it, err
 			}
 			it.Ids = data
+		case "reference":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reference"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Reference = data
 		}
 	}
 
