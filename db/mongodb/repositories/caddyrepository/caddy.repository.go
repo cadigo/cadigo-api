@@ -161,6 +161,10 @@ func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination
 		query["skill"] = bson.M{"$in": filter.Skill}
 	}
 
+	if filter.Reference != nil {
+		query["reference"] = bson.M{"$eq": filter.Reference}
+	}
+
 	if len(filter.Ids) > 0 {
 		docIds := make([]primitive.ObjectID, len(filter.Ids))
 
