@@ -18,6 +18,7 @@ type Caddy struct {
 	Time          []string `json:"time,omitempty" copier:"Time"`
 	Cost          float64  `json:"cost,omitempty" copier:"Cost"`
 	CourseGolfIDs []string `json:"courseGolfIDs,omitempty" copier:"CourseGolfIDs"`
+	Images        []string `json:"images,omitempty" copier:"Images"`
 }
 
 func (this Caddy) Parse(graph modelgraph.CaddyInput) error {
