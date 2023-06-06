@@ -51,6 +51,7 @@ type BookingsInput struct {
 
 type Caddy struct {
 	ID            *string       `json:"id,omitempty" copier:"Id"`
+	Reference     *string       `json:"reference,omitempty" copier:"Reference"`
 	Name          *string       `json:"name,omitempty" copier:"Name"`
 	Location      *string       `json:"location,omitempty" copier:"Location"`
 	Avialability  *string       `json:"avialability,omitempty" copier:"Avialability"`

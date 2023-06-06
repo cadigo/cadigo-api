@@ -81,6 +81,7 @@ type ComplexityRoot struct {
 		Images        func(childComplexity int) int
 		Location      func(childComplexity int) int
 		Name          func(childComplexity int) int
+		Reference     func(childComplexity int) int
 		Skill         func(childComplexity int) int
 		Star          func(childComplexity int) int
 		Time          func(childComplexity int) int
@@ -415,6 +416,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Caddy.Name(childComplexity), true
+
+	case "Caddy.reference":
+		if e.complexity.Caddy.Reference == nil {
+			break
+		}
+
+		return e.complexity.Caddy.Reference(childComplexity), true
 
 	case "Caddy.skill":
 		if e.complexity.Caddy.Skill == nil {
@@ -1966,6 +1974,8 @@ func (ec *executionContext) fieldContext_Booking_caddy(ctx context.Context, fiel
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Caddy_id(ctx, field)
+			case "reference":
+				return ec.fieldContext_Caddy_reference(ctx, field)
 			case "name":
 				return ec.fieldContext_Caddy_name(ctx, field)
 			case "location":
@@ -2303,6 +2313,47 @@ func (ec *executionContext) _Caddy_id(ctx context.Context, field graphql.Collect
 }
 
 func (ec *executionContext) fieldContext_Caddy_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Caddy",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Caddy_reference(ctx context.Context, field graphql.CollectedField, obj *modelgraph.Caddy) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Caddy_reference(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reference, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Caddy_reference(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Caddy",
 		Field:      field,
@@ -2825,6 +2876,8 @@ func (ec *executionContext) fieldContext_CaddyData_data(ctx context.Context, fie
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Caddy_id(ctx, field)
+			case "reference":
+				return ec.fieldContext_Caddy_reference(ctx, field)
 			case "name":
 				return ec.fieldContext_Caddy_name(ctx, field)
 			case "location":
@@ -3977,6 +4030,8 @@ func (ec *executionContext) fieldContext_Mutation_caddy(ctx context.Context, fie
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Caddy_id(ctx, field)
+			case "reference":
+				return ec.fieldContext_Caddy_reference(ctx, field)
 			case "name":
 				return ec.fieldContext_Caddy_name(ctx, field)
 			case "location":
@@ -4058,6 +4113,8 @@ func (ec *executionContext) fieldContext_Mutation_deleteCaddy(ctx context.Contex
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Caddy_id(ctx, field)
+			case "reference":
+				return ec.fieldContext_Caddy_reference(ctx, field)
 			case "name":
 				return ec.fieldContext_Caddy_name(ctx, field)
 			case "location":
@@ -5501,6 +5558,8 @@ func (ec *executionContext) fieldContext_Query_getCaddy(ctx context.Context, fie
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Caddy_id(ctx, field)
+			case "reference":
+				return ec.fieldContext_Caddy_reference(ctx, field)
 			case "name":
 				return ec.fieldContext_Caddy_name(ctx, field)
 			case "location":
@@ -9526,6 +9585,10 @@ func (ec *executionContext) _Caddy(ctx context.Context, sel ast.SelectionSet, ob
 		case "id":
 
 			out.Values[i] = ec._Caddy_id(ctx, field, obj)
+
+		case "reference":
+
+			out.Values[i] = ec._Caddy_reference(ctx, field, obj)
 
 		case "name":
 
