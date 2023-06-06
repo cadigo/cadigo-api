@@ -76,7 +76,13 @@ func (r *Handler) GetCaddys(ctx context.Context, input modelgraph.GetCaddysInput
 		return nil, err
 	}
 
-	res, total, err := r.servCaddy.GetAll(ctx, defaultPagination)
+	defaultFilter := new(modela.CaddyFilter).Init()
+	err = copier.Copy(&defaultFilter, &input)
+	if err != nil {
+		return nil, err
+	}
+
+	res, total, err := r.servCaddy.GetAll(ctx, defaultPagination, defaultFilter)
 	if err != nil {
 		return nil, err
 	}

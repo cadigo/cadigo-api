@@ -1,6 +1,7 @@
 package modela
 
 import (
+	"cadigo-api/graph/modelgraph"
 	"cadigo-api/http/chillpayhttp"
 
 	"github.com/jinzhu/copier"
@@ -39,21 +40,21 @@ func (this PaymentRequest) Init(res *Booking) (*PaymentRequest, error) {
 // }
 
 type Payment struct {
-	ID                 string  `json:"Id"`
-	PayLinkID          int     `json:"payLinkId"`
-	ProductImage       string  `json:"productImage"`
-	ProductName        string  `json:"productName"`
-	ProductDescription string  `json:"productDescription"`
-	Amount             float64 `json:"amount"`
-	Currency           string  `json:"currency"`
-	CreatedDate        string  `json:"createdDate"`
-	StartDate          string  `json:"startDate"`
-	ExpiredDate        string  `json:"expiredDate"`
-	PaymentLimit       int     `json:"paymentLimit"`
-	Status             string  `json:"status"`
-	PayLinkToken       string  `json:"payLinkToken"`
-	PaymentURL         string  `json:"paymentUrl"`
-	QrImage            string  `json:"qrImage"`
+	ID                 string  `json:"id" copier:"ID"`
+	PayLinkID          int     `json:"payLinkId" copier:"PayLinkID"`
+	ProductImage       string  `json:"productImage" copier:"ProductImage"`
+	ProductName        string  `json:"productName" copier:"ProductName"`
+	ProductDescription string  `json:"productDescription" copier:"ProductDescription"`
+	Amount             float64 `json:"amount" copier:"Amount"`
+	Currency           string  `json:"currency" copier:"Currency"`
+	CreatedDate        string  `json:"createdDate" copier:"CreatedDate"`
+	StartDate          string  `json:"startDate" copier:"StartDate"`
+	ExpiredDate        string  `json:"expiredDate" copier:"ExpiredDate"`
+	PaymentLimit       int     `json:"paymentLimit" copier:"PaymentLimit"`
+	Status             string  `json:"status" copier:"Status"`
+	PayLinkToken       string  `json:"payLinkToken" copier:"PayLinkToken"`
+	PaymentURL         string  `json:"paymentUrl" copier:"PaymentURL"`
+	QrImage            string  `json:"qrImage" copier:"QrImage"`
 }
 
 func (this Payment) Init(res chillpayhttp.PaylinkGenerateResponse) (*Payment, error) {
@@ -65,11 +66,28 @@ func (this Payment) Init(res chillpayhttp.PaylinkGenerateResponse) (*Payment, er
 	return &this, nil
 }
 
-// func (this Payment) ToGraph() modelgraph.Payment {
-// 	g := modelgraph.Payment{}
-// 	copier.Copy(&g, &this)
-// 	return g
-// }
+func (this Payment) ToGraph() modelgraph.Payment {
+
+	a := int(this.Amount)
+
+	return modelgraph.Payment{
+		ID:                 this.ID,
+		PayLinkID:          &this.PayLinkID,
+		ProductImage:       &this.ProductImage,
+		ProductName:        &this.ProductName,
+		ProductDescription: &this.ProductDescription,
+		Amount:             &a,
+		Currency:           &this.Currency,
+		CreatedDate:        &this.CreatedDate,
+		StartDate:          &this.StartDate,
+		ExpiredDate:        &this.ExpiredDate,
+		PaymentLimit:       &this.PaymentLimit,
+		Status:             &this.Status,
+		PayLinkToken:       &this.PayLinkToken,
+		PaymentURL:         &this.PaymentURL,
+		QRImage:            &this.QrImage,
+	}
+}
 
 // func (this Payment) ToChillpay() chillpayhttp.PaylinkGenerateRequest {
 // 	p := chillpayhttp.PaylinkGenerateRequest{}

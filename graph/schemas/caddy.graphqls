@@ -13,7 +13,7 @@ type Caddy {
   location: String
   avialability: String
   skill: [String]
-  start: Int
+  star: Int
   description: String
   time: [String]
   cost: Float
@@ -27,6 +27,7 @@ type Caddy {
 input GetCaddyInput {
   language: LanguageEnum!
   id: String
+  reference: String
 }
 
 # GraphQl schema Input
@@ -37,19 +38,21 @@ input GetCaddysInput {
   skill: [String]
   courseGolfIDs: [String]
   cost: Float
-  start: Int
+  star: Int
   ids: [String]
+  reference: String
 }
 
 # GraphQl schema Input
 # CaddyInput
 input CaddyInput {
   id: String
+  reference: String
   name: String!
   location: String!
   avialability: String!
   skill: [String!]
-  start: Int!
+  star: Int!
   description: String
   time: [String!]
   cost: Float!

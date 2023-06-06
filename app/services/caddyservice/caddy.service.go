@@ -20,8 +20,8 @@ func (serv *Service) Create(ctx context.Context, caddy *modela.Caddy) (*modela.C
 	return serv.repo.Create(ctx, caddy)
 }
 
-func (serv *Service) GetAll(ctx context.Context, pagination modela.Pagination) (result []*modela.Caddy, total int64, err error) {
-	return serv.repo.GetAll(ctx, pagination)
+func (serv *Service) GetAll(ctx context.Context, pagination modela.Pagination, filter modela.CaddyFilter) (result []*modela.Caddy, total int64, err error) {
+	return serv.repo.GetAll(ctx, pagination, filter)
 }
 
 func (serv *Service) Update(ctx context.Context, argID string, record *modela.Caddy) (*modela.Caddy, error) {

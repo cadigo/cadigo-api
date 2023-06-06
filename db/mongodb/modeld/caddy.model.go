@@ -9,10 +9,11 @@ type Caddy struct {
 	BaseBSONModel `bson:",inline"`
 	Language      string   `bson:"language" copier:"Language"`
 	Name          string   `bson:"name" copier:"Name"`
+	Reference     string   `bson:"reference" copier:"Reference"`
 	Location      string   `bson:"location,omitempty" copier:"Location"`
 	Avialability  string   `bson:"avialability,omitempty" copier:"Avialability"`
 	Skill         []string `bson:"skill,omitempty" copier:"Skill"`
-	Start         int      `bson:"start,omitempty" copier:"Start"`
+	Star          int      `bson:"star,omitempty" copier:"Star"`
 	Description   string   `bson:"description,omitempty" copier:"Description"`
 	Time          []string `bson:"time,omitempty" copier:"Time"`
 	Tags          []string `bson:"tags,omitempty" copier:"Tags"`
@@ -52,7 +53,7 @@ func (this Caddy) ToCaddy() modela.Caddy {
 		Location:     this.Location,
 		Avialability: this.Avialability,
 		Skill:        skill,
-		Start:        this.Start,
+		Star:         this.Star,
 		Description:  this.Description,
 		Time:         time,
 		Cost:         this.Cost,

@@ -8,11 +8,12 @@ import (
 
 type Caddy struct {
 	ID            string   `json:"id,omitempty" copier:"Id"`
+	Reference     string   `json:"reference,omitempty" copier:"Reference"`
 	Name          string   `json:"name,omitempty" copier:"Name"`
 	Location      string   `json:"location,omitempty" copier:"Location"`
 	Avialability  string   `json:"avialability,omitempty" copier:"Avialability"`
 	Skill         []string `json:"skill,omitempty" copier:"Skill"`
-	Start         int      `json:"start,omitempty" copier:"Start"`
+	Star          int      `json:"star,omitempty" copier:"Star"`
 	Description   string   `json:"description,omitempty" copier:"Description,nopanic"`
 	Time          []string `json:"time,omitempty" copier:"Time"`
 	Cost          float64  `json:"cost,omitempty" copier:"Cost"`
@@ -27,4 +28,23 @@ func (this Caddy) ToGraph() modelgraph.Caddy {
 	g := modelgraph.Caddy{}
 	copier.Copy(&g, &this)
 	return g
+}
+
+type CaddyFilter struct {
+	Skill         []string `json:"skill,omitempty" copier:"Skill"`
+	CourseGolfIDs []string `json:"courseGolfIDs,omitempty" copier:"CourseGolfIDs"`
+	Cost          *float64 `json:"cost,omitempty" copier:"Cost"`
+	Star          *int     `json:"star,omitempty" copier:"Star"`
+	Ids           []string `json:"ids,omitempty" copier:"Ids"`
+	Reference     *string  `json:"reference,omitempty" copier:"Reference"`
+}
+
+func (this CaddyFilter) Init() CaddyFilter {
+	this.Skill = []string{}
+	this.CourseGolfIDs = []string{}
+	this.Cost = nil
+	this.Star = nil
+	this.Ids = []string{}
+
+	return this
 }

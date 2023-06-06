@@ -49,8 +49,8 @@ func (this Booking) SetBooking(b modela.Booking) (*Booking, error) {
 		return nil, err
 	}
 
-	if b.PaymentID != nil {
-		paymentID, err := primitive.ObjectIDFromHex(*b.PaymentID)
+	if b.PaymentID != "" {
+		paymentID, err := primitive.ObjectIDFromHex(b.PaymentID)
 		if err != nil {
 			return nil, err
 		}
@@ -83,6 +83,7 @@ func (this Booking) ToBooking() modela.Booking {
 		CustomerID:   this.Customer.Hex(),
 		CourseGolfID: string(this.CourseGolf.Hex()),
 		CaddyID:      string(this.Caddy.Hex()),
+		PaymentID:    string(this.Payment.Hex()),
 		TotalNet:     &this.TotalNet,
 	}
 }
