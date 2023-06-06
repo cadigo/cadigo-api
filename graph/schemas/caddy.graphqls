@@ -9,6 +9,7 @@ type CaddyData {
 
 type Caddy {
   id: String
+  reference: String
   name: String
   location: String
   avialability: String
