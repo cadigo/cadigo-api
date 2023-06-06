@@ -36,9 +36,11 @@ func (this Caddy) Update() Caddy {
 }
 
 func (this Caddy) ToCaddy() modela.Caddy {
-	var skill []string
-	var time []string
-
+	var (
+		skill  []string
+		time   []string
+		images []string
+	)
 	for _, v := range this.Skill {
 		skill = append(skill, v)
 	}
@@ -46,10 +48,14 @@ func (this Caddy) ToCaddy() modela.Caddy {
 	for _, v := range this.Time {
 		time = append(time, v)
 	}
+	for _, v := range this.Images {
+		images = append(images, v)
+	}
 
 	return modela.Caddy{
 		ID:           this.RawID.Hex(),
 		Name:         this.Name,
+		Reference:    this.Reference,
 		Location:     this.Location,
 		Avialability: this.Avialability,
 		Skill:        skill,
@@ -57,5 +63,6 @@ func (this Caddy) ToCaddy() modela.Caddy {
 		Description:  this.Description,
 		Time:         time,
 		Cost:         this.Cost,
+		Images:       images,
 	}
 }
