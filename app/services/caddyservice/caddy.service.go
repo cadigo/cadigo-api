@@ -31,3 +31,7 @@ func (serv *Service) Update(ctx context.Context, argID string, record *modela.Ca
 func (serv *Service) GetByID(ctx context.Context, id string) (result *modela.Caddy, err error) {
 	return serv.repo.GetByID(ctx, id)
 }
+
+func (serv *Service) GetByReference(ctx context.Context, reference string) (result *modela.Caddy, err error) {
+	return serv.repo.GetByReference(ctx, reference)
+}

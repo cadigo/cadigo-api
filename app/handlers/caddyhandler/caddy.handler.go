@@ -64,6 +64,17 @@ func (r *Handler) GetCaddy(ctx context.Context, input modelgraph.GetCaddyInput) 
 		return &g, nil
 	}
 
+	if input.Reference != nil {
+		d, err := r.servCaddy.GetByID(ctx, *input.Reference)
+		if err != nil {
+			return nil, nil
+		}
+
+		g := d.ToGraph()
+
+		return &g, nil
+	}
+
 	return nil, nil
 }
 

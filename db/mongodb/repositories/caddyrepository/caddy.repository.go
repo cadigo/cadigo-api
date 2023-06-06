@@ -197,3 +197,20 @@ func (repo *Repository) GetAll(ctx context.Context, pagination modela.Pagination
 
 	return result, total, err
 }
+
+func (repo *Repository) GetByReference(ctx context.Context, reference string) (result *modela.Caddy, err error) {
+	var (
+		caddy modeld.Caddy
+	)
+
+	collection := repo.MongodbConnector.DB(ctx).Collection(repo.collection)
+
+	err = collection.FindOne(ctx, bson.M{"reference": reference}).Decode(&caddy)
+	if err != nil {
+		return nil, err
+	}
+
+	c := caddy.ToCaddy()
+
+	return &c, nil
+}
