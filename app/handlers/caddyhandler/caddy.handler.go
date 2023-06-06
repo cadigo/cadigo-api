@@ -65,7 +65,7 @@ func (r *Handler) GetCaddy(ctx context.Context, input modelgraph.GetCaddyInput) 
 	}
 
 	if input.Reference != nil {
-		d, err := r.servCaddy.GetByID(ctx, *input.Reference)
+		d, err := r.servCaddy.GetByReference(ctx, *input.Reference)
 		if err != nil {
 			return nil, nil
 		}
