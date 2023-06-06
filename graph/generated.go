@@ -135,7 +135,7 @@ type ComplexityRoot struct {
 		Customer         func(childComplexity int, input modelgraph.CustomerInput) int
 		DeleteCaddy      func(childComplexity int, id string) int
 		DeleteCourseGolf func(childComplexity int, id string) int
-		PostMessage      func(childComplexity int, inpuy *modelgraph.PostMessageInput) int
+		PostMessage      func(childComplexity int, input *modelgraph.PostMessageInput) int
 		User             func(childComplexity int, input modelgraph.UserInput) int
 	}
 
@@ -210,7 +210,7 @@ type MutationResolver interface {
 	Booking(ctx context.Context, input modelgraph.BookingInput) (*modelgraph.Booking, error)
 	Caddy(ctx context.Context, input modelgraph.CaddyInput) (*modelgraph.Caddy, error)
 	DeleteCaddy(ctx context.Context, id string) (*modelgraph.Caddy, error)
-	PostMessage(ctx context.Context, inpuy *modelgraph.PostMessageInput) (*modelgraph.Message, error)
+	PostMessage(ctx context.Context, input *modelgraph.PostMessageInput) (*modelgraph.Message, error)
 	CourseGolf(ctx context.Context, input modelgraph.CourseGolfInput) (*modelgraph.CourseGolf, error)
 	DeleteCourseGolf(ctx context.Context, id string) (*modelgraph.CourseGolf, error)
 	Customer(ctx context.Context, input modelgraph.CustomerInput) (*modelgraph.Customer, error)
@@ -688,7 +688,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PostMessage(childComplexity, args["inpuy"].(*modelgraph.PostMessageInput)), true
+		return e.complexity.Mutation.PostMessage(childComplexity, args["input"].(*modelgraph.PostMessageInput)), true
 
 	case "Mutation.user":
 		if e.complexity.Mutation.User == nil {
@@ -1244,14 +1244,14 @@ func (ec *executionContext) field_Mutation_postMessage_args(ctx context.Context,
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *modelgraph.PostMessageInput
-	if tmp, ok := rawArgs["inpuy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inpuy"))
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOPostMessageInput2ᚖcadigoᚑapiᚋgraphᚋmodelgraphᚐPostMessageInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["inpuy"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -4169,7 +4169,7 @@ func (ec *executionContext) _Mutation_postMessage(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().PostMessage(rctx, fc.Args["inpuy"].(*modelgraph.PostMessageInput))
+		return ec.resolvers.Mutation().PostMessage(rctx, fc.Args["input"].(*modelgraph.PostMessageInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
