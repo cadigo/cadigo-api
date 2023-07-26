@@ -10,8 +10,8 @@ import (
 )
 
 // PostMessage is the resolver for the postMessage field.
-func (r *mutationResolver) PostMessage(ctx context.Context, inpuy *modelgraph.PostMessageInput) (*modelgraph.Message, error) {
-	return r.ChatHandler.PostMessage(ctx, inpuy)
+func (r *mutationResolver) PostMessage(ctx context.Context, input *modelgraph.PostMessageInput) (*modelgraph.Message, error) {
+	return r.ChatHandler.PostMessage(ctx, input)
 }
 
 // GetMessages is the resolver for the getMessages field.

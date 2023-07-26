@@ -50,7 +50,7 @@ type Online {
 }
 
 extend type Mutation {
-  postMessage(inpuy: PostMessageInput): Message
+  postMessage(input: PostMessageInput): Message
 }
 
 extend type Query {
